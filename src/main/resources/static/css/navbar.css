@@ -1,0 +1,50 @@
+.bg-pink {
+    background-color: #ff007f;
+}
+
+#sidebar {
+    width: 250px;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+#sidebar .components a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#sidebar .components a:hover {
+    background-color: #e60073;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.sidebar-header h3 {
+    color: white;
+    font-weight: bold;
+}
+
+#sidebar .logout-section a {
+    text-align: center;
+    width: 100%;
+    border: 1px solid white;
+}
+
+#sidebar .logout-section a:hover {
+    background-color: #e60073;
+    color: white;
+    border-color: #e60073;
+}
+
