@@ -1,4 +1,4 @@
-package com.uplus.miniproject2.entity.proflie;
+package com.uplus.miniproject2.entity.hobby;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,23 +11,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "region")
+@Table(name = "hobby")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Region {
+public class Hobby {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;      // 지역 이름
-    private double latitude;  // 위도
-    private double longitude; // 경도
+    private String name;
 
     @Builder
-    public Region(String name, double latitude, double longitude) {
+    public Hobby(String name) {
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 }
