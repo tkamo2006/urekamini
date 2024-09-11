@@ -4,6 +4,8 @@ import com.uplus.miniproject2.entity.hobby.HobbyBoard;
 import com.uplus.miniproject2.entity.proflie.Profile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,7 +32,10 @@ public class User {
     private String name;
     private String username;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
+
     private String gender;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

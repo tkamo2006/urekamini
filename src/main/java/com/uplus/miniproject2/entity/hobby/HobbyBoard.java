@@ -1,5 +1,6 @@
 package com.uplus.miniproject2.entity.hobby;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.uplus.miniproject2.entity.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
