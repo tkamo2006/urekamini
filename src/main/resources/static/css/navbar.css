@@ -48,3 +48,8 @@
     border-color: #e60073;
 }
 
+<!-- 지도 크기 -->
+#map {
+    width: 100%;
+    height: 700px;
+}
