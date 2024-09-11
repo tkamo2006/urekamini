@@ -46,6 +46,7 @@ public class Profile {
     private Region region;
 
     private String major;
+
     private String plan;
 
     @ManyToMany
@@ -61,6 +62,7 @@ public class Profile {
     private byte[] image;
 
     @Builder
+
     public Profile(User user, MBTI mbti, Region region, String major, String plan, List<Hobby> hobbies, byte[] image) {
         this.user = user;
         this.mbti = mbti;
