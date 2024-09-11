@@ -33,7 +33,9 @@ public class Profile {
     @Enumerated(EnumType.STRING)
     private MBTI mbti;
 
-    private String region;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
     private String hobby;
     private String plan;
 
@@ -41,7 +43,7 @@ public class Profile {
     private byte[] image;
 
     @Builder
-    public Profile(User user, MBTI mbti, String region, String hobby, String plan, byte[] image) {
+    public Profile(User user, MBTI mbti, Region region, String hobby, String plan, byte[] image) {
         this.user = user;
         this.mbti = mbti;
         this.region = region;
