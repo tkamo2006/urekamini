@@ -11,10 +11,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "hobby_board")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HobbyBoard {
 

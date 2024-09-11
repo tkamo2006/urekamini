@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        /* Reset some default styling */
+        body, h1, label, input, button {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Set up basic styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Style the login container */
+        .login-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style the login form */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Style the form headings */
+        .login-form h1 {
+            margin-bottom: 1rem;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Style the form labels and inputs */
+        .login-form label {
+            margin-bottom: 0.5rem;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .login-form input {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Style the submit button */
+        .login-form button {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF007F;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style the signup link */
+        .signup-link {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .signup-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form class="login-form" id="loginForm">
+            <h1>Login</h1>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"  value="gildong@qwer.com" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="1234" required>
+
+            <button type="button" id="btnLogin">Login</button>
+            <div class="signup-link">
+                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function() {
+            document.querySelector("#btnLogin").onclick = login;
+        }
+
+        async function login() {
+            let email = document.querySelector("#username").value;
+            let password = document.querySelector("#password").value;
+
+            console.log(email, password);
+
+            let urlParams = new URLSearchParams({
+                email,
+                password
+            });
+
+            let url = "/api/user/login";
+
+            
+            let fetchOptions = {
+                method: "POST",
+                body: urlParams
+            }
+
+            try {
+                let response = await fetch(url, fetchOptions);
+                let data = await response.json();
+
+                if (data.result == "success") {
+                    // Login success
+                    console.log( "data.userDto : "+data.userDto);
+
+                    // userDto 객체를 json 문자열로 변환해서 세션 스토리지에 데이터 저장
+					// 필요할 때 다시 객체로 변환해서 사용
+					console.log(data);
+                    let userDtoJson = JSON.stringify(data.userDto);
+                    sessionStorage.setItem("userDto", userDtoJson);
+                    
+                    alert("로그인에 성공하였습니다.");
+                    
+                    fetch('/api/user/role')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                    
+                } else if (data.result == "fail") {
+                    alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert("로그인 과정에서 오류가 발생했습니다.");
+            }
+        }
+    </script>
+</body>
+</html>
