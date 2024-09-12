@@ -35,6 +35,7 @@ public class UserService {
                 profile.getMajor(),
                 profile.getHobbies(),
                 profile.getPlan(),
+                profile.getNiceExperience(),
                 profile.getImage()
         );
     }

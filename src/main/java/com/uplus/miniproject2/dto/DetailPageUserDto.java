@@ -14,6 +14,7 @@ public class DetailPageUserDto {
     private String region;
     private String major;
     private List<Hobby> hobbies;
+    private String niceExperience;
     private String plan;
     private byte[] profileImage;
 }
