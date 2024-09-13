@@ -4,6 +4,7 @@ import com.uplus.miniproject2.service.ProfileImageService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @SpringBootApplication
 public class Miniproject2Application {
