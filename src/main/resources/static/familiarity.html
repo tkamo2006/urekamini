@@ -104,13 +104,25 @@
     });
 
     function calculateFamiliarity(userId) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
         document.getElementById('nameScore').innerText = '계산 중...';
         document.getElementById('mbtiScore').innerText = '계산 중...';
         document.getElementById('hobbyScore').innerText = '계산 중...';
         document.getElementById('finalScore').innerText = '계산 중...';
 
         setTimeout(() => {
-            fetch(`/api/familiarity/${userId}`)
+            fetch(`/api/familiarity/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.response) {
