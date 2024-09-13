@@ -1,0 +1,20 @@
+.card-header {
+    display: flex;
+    justify-content: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px; /* You can remove or keep this based on your preference */
+}
+
+.chart-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 16px; /* Adjusted font size */
+    font-weight: bold;
+    color: #333; /* Added color */
+}
