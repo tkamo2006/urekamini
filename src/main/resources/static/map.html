@@ -18,7 +18,14 @@
 <div class="container">
     <h1 class="text-center">지도 페이지</h1>
     <p class="text-center">다음은 사용자들의 위치를 표시한 지도입니다.</p>
-    <div class="map-container" id="map"></div>
+
+    <!-- 지도과 사용자 목록을 감싸는 컨테이너 -->
+    <div class="map-and-list-container">
+        <div class="map-container" id="map"></div>
+        <div class="user-list" id="user-list">
+            <!-- 사용자 목록이 동적으로 삽입됩니다 -->
+        </div>
+    </div>
 </div>
 
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b725e40e2b697b42e1aac0b02c8a06ee&libraries=clusterer"></script>
@@ -31,7 +38,9 @@
 
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
-    var markers = [];
+    var markers = {};
+    var infowindows = {};
+    var userListContainer = document.getElementById('user-list');
 
     fetch('/api/profiles')
         .then(response => response.json())
@@ -48,17 +57,18 @@
                         title: profile.user.name
                     });
 
-                    markers.push(marker);
-
                     var infowindow = new kakao.maps.InfoWindow({
                         content: `<div style="padding: 3px 5px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); font-size: 12px; color: #333; width: 150px; height: auto; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: 'Arial', sans-serif;">
-                            <!-- 이름을 클릭 시 디테일 페이지로 이동 -->
                             <a href="detail.html?userId=${profile.user.id}" style="text-decoration: none; color: #333;">
                                 <strong style="font-size: 14px; font-weight: bold;">${profile.user.name}</strong>
                             </a>
                             <span style="margin-top: 2px; font-size: 12px; color: #666;">${profile.region.name || '주소 정보 없음'}</span>
                         </div>`
                     });
+
+                    // 마커와 InfoWindow를 객체에 저장
+                    markers[profile.user.id] = marker;
+                    infowindows[profile.user.id] = infowindow;
 
                     kakao.maps.event.addListener(marker, 'click', function() {
                         if (infowindow.getMap()) {
@@ -67,8 +77,33 @@
                             infowindow.open(map, marker);
                         }
                     });
+
+                    // 사용자 목록 추가
+                    var userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `<a href="#" data-user-id="${profile.user.id}" style="text-decoration: none; color: #333;">${profile.user.name}</a>`;
+                    userListContainer.appendChild(userItem);
                 } else {
                     console.error('Profile 데이터가 부족합니다:', profile);
+                }
+            });
+
+            // 사용자 목록 클릭 이벤트 추가
+            userListContainer.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                    var userId = event.target.getAttribute('data-user-id');
+                    var marker = markers[userId];
+                    var infowindow = infowindows[userId];
+
+                    if (marker && infowindow) {
+                        if (infowindow.getMap()) {
+                            infowindow.close();
+                        } else {
+                            infowindow.open(map, marker);
+                        }
+                        // 지도 중심을 부드럽게 이동
+                        map.panTo(marker.getPosition());
+                    }
                 }
             });
         })

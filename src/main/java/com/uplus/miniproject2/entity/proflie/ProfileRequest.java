@@ -46,4 +46,24 @@ public class ProfileRequest {
         this.requestType = requestType;
         this.requestStatus = requestStatus;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public RequestType getRequestType() {
+        return requestType;
+    }
+
+    public RequestStatus getRequestStatus() {
+        return requestStatus;
+    }
 }
