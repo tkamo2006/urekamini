@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>U+ Login Page</title>
     <style>
         /* Reset some default styling */
         body, h1, label, input, button {
@@ -98,7 +99,7 @@
         <form class="login-form" id="loginForm">
             <h1>Login</h1>
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username"  value="gildong@qwer.com" required>
+            <input type="text" id="username" name="username"  value="admin" required>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" value="1234" required>
@@ -107,67 +108,126 @@
             <div class="signup-link">
                 <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
             </div>
+            <button type="button" id="btnAdmin">ADMIN</button>
+
         </form>
     </div>
 
     <script>
         window.onload = function() {
             document.querySelector("#btnLogin").onclick = login;
+            document.querySelector("#btnAdmin").onclick = logout;
+        }
+        async function accessAdminUrl() {
+            // localStorage에서 토큰 읽기
+            let accessToken = localStorage.getItem("accessToken");
+
+            if (!accessToken) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+
+            let url = "/admin"; // admin role만 접근 가능한 URL
+
+            // 요청 옵션 설정
+            let fetchOptions = {
+                method: "GET", // 필요한 HTTP 메소드 (GET, POST 등)
+                headers: {
+                    "Authorization": "Bearer " + accessToken // Authorization 헤더에 토큰 추가
+                }
+            };
+
+            try {
+                // 서버로 요청 보내기
+                let response = await fetch(url, fetchOptions);
+
+                if (!response.ok) {
+                    // 요청 실패 시 오류 처리
+                    if (response.status === 403) {
+                        alert("접근 권한이 없습니다.");
+                    } else {
+                        throw new Error("Network response was not ok");
+                    }
+                } else {
+                    // 클라이언트에서 JSON 형식이 아닌 응답을 받을 경우를 대비
+                    const contentType = response.headers.get("content-type");
+                    let data;
+                    // 요청 성공 시 응답 처리
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        data = await response.json();
+                    } else {
+                        data = await response.text(); // Handle non-JSON response
+                    }
+                    console.log("Admin data:", data);
+                    // 필요에 따라 data를 사용
+                }
+
+            } catch (error) {
+                console.error("Error during access to admin URL:", error);
+                alert("요청 과정에서 오류가 발생했습니다.");
+            }
         }
 
         async function login() {
-            let email = document.querySelector("#username").value;
+            let username = document.querySelector("#username").value;
             let password = document.querySelector("#password").value;
-
-            console.log(email, password);
-
-            let urlParams = new URLSearchParams({
-                email,
-                password
-            });
-
-            let url = "/api/user/login";
-
-            
+            console.log(username, password);
+            let formData = new FormData();
+            formData.append("username", username);
+            formData.append("password", password);
+            let url = "/login";
             let fetchOptions = {
                 method: "POST",
-                body: urlParams
+                body: formData
             }
-
             try {
                 let response = await fetch(url, fetchOptions);
-                let data = await response.json();
-
-                if (data.result == "success") {
-                    // Login success
-                    console.log( "data.userDto : "+data.userDto);
-
-                    // userDto 객체를 json 문자열로 변환해서 세션 스토리지에 데이터 저장
-					// 필요할 때 다시 객체로 변환해서 사용
-					console.log(data);
-                    let userDtoJson = JSON.stringify(data.userDto);
-                    sessionStorage.setItem("userDto", userDtoJson);
-                    
+                // Check if response is OK
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Extract Access Token from response header
+                let authorizationHeader = response.headers.get("Authorization");
+                if (authorizationHeader) {
+                    // Extract token from the "Authorization" header
+                    let accessToken = authorizationHeader.replace("Bearer ", "");
+                    // Store Access Token in local storage
+                    localStorage.setItem("accessToken", accessToken);
                     alert("로그인에 성공하였습니다.");
-                    
-                    fetch('/api/user/role')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-
-                    
-                } else if (data.result == "fail") {
-                    alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+                    window.location.href = "index.html";
                 }
             } catch (error) {
                 console.error('Error during login:', error);
                 alert("로그인 과정에서 오류가 발생했습니다.");
             }
         }
+
+
+        async function logout() {
+            try {
+                console.log("로그아웃");
+                let response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'include', // Include cookies with the request
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    localStorage.removeItem("accessToken");
+                    alert("로그아웃 되었습니다.");
+                    window.location.href = "/login.html"; // Redirect to login page
+                } else {
+                    alert("로그아웃에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                alert("로그아웃 과정에서 오류가 발생했습니다.");
+            }
+        }
+
+
     </script>
 </body>
 </html>

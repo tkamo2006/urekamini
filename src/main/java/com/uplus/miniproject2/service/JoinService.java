@@ -20,11 +20,13 @@ public class JoinService {
         String name = joinDto.getName();
         String username = joinDto.getUsername();
         String password = joinDto.getPassword();
+        Role role = joinDto.getRole();
+        String gender = joinDto.getGender();
 
 
         if(!userRepository.existsByUsername(username)) {
             log.info("성공");
-            User user = User.builder().name(name).username(username).password(bCryptPasswordEncoder.encode(password)).role(Role.USER).build();
+            User user = User.builder().name(name).username(username).password(bCryptPasswordEncoder.encode(password)).role(role).gender(gender).build();
             userRepository.save(user);
         }
     }

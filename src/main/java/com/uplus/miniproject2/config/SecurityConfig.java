@@ -1,6 +1,9 @@
 package com.uplus.miniproject2.config;
 
+import com.uplus.miniproject2.jwt.JWTFilter;
+import com.uplus.miniproject2.jwt.JWTUtil;
 import com.uplus.miniproject2.jwt.LoginFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -28,48 +31,55 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
-
-
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // 세션 방식은 세션이 항상 고정되어 csrf 공격을 필수적으로 방어가 필요,
-        // jwt방식은 세션을 stateless 상태로 관리되기 때문에 방어하지 않아도 됨
-        //csrf disable
-        http
-                .csrf((auth) -> auth.disable());
-        // jwt 방식으로 로그인을 진핼하기 때문
-        // From 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
-        // jwt 방식으로 로그인을 진핼하기 때문
-        //http basic 인증 방식 disable
-        http
-                .httpBasic((auth) -> auth.disable());
+        // CSRF 비활성화 (JWT 사용으로 인해 필요 없음)
+        http.csrf((auth) -> auth.disable());
 
-        //경로별 인가 작업 ( 필요한 권한을 가져야 하는지 로그인이 필요한지)
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll() // 누구나
-                        .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
-                        .anyRequest().authenticated()); // 로그인시
-        // jwt 방식에서는 세션을 항상 stateless 상태로 관리
+        // Form 로그인 및 HTTP 기본 인증 비활성화 (JWT 사용으로 인해 필요 없음)
+        http.formLogin((auth) -> auth.disable());
+        http.httpBasic((auth) -> auth.disable());
 
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+        // 경로별 인가 설정
+        http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers(
+                        "/*.html",         // 모든 HTML 파일
+                        "/",
+                        "/join",
+                        "/check",
+                        "/logout",
+                        "/api/users/",
+                        "/css/**", "/js/**", "/images/**"
+                ).permitAll() // 누구나 접근 가능
+                .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
+                .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
 
-        //세션 설정
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // JWT 필터 등록
+        http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        // 로그인 필터 등록
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        // 세션 관리 설정 (JWT 사용으로 인해 세션 사용 안 함)
+        http.sessionManagement((session) -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // 로그아웃 설정
+        http.logout((logout) -> logout
+                .logoutUrl("/logout") // 로그아웃 요청 URL
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    // 로그아웃 성공 시의 동작 설정
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\": \"로그아웃 성공\"}");
+                })
+                .deleteCookies("Refresh-Token") // 쿠키 삭제
+                .invalidateHttpSession(false)); // 세션 무효화
 
         return http.build();
-
-
     }
 }
