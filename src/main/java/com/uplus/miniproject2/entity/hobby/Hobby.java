@@ -1,10 +1,6 @@
 package com.uplus.miniproject2.entity.hobby;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +17,9 @@ public class Hobby {
     private Long id;
 
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    private HobbyCategory hobbyCategory;
 
     @Builder
     public Hobby(String name) {
