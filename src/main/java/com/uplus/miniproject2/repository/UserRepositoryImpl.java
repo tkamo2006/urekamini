@@ -8,6 +8,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.uplus.miniproject2.dto.MainPageUserDto;
 import com.uplus.miniproject2.entity.proflie.MBTI;
 import com.uplus.miniproject2.entity.proflie.QProfile;
+import com.uplus.miniproject2.entity.proflie.QProfileRequest;
+import com.uplus.miniproject2.entity.proflie.RequestStatus;
 import com.uplus.miniproject2.entity.user.QUser;
 import com.uplus.miniproject2.entity.user.User;
 import jakarta.persistence.EntityManager;
@@ -30,6 +32,7 @@ public class UserRepositoryImpl implements CustomUserRepository {
                                                        Pageable pageable) {
         QUser user = QUser.user;
         QProfile profile = QProfile.profile;
+        QProfileRequest profileRequest = QProfileRequest.profileRequest;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -60,7 +63,13 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 ))
                 .from(user)
                 .join(user.profile, profile)
-                .where(builder)
+                .join(user.profileRequests, profileRequest)
+                .on(profileRequest.profile.eq(profile))
+                .where(builder
+                        .and(profileRequest.requestStatus.isNotNull())
+                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
+                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED)))
+                .orderBy(user.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -68,7 +77,10 @@ public class UserRepositoryImpl implements CustomUserRepository {
         long total = queryFactory
                 .selectFrom(user)
                 .join(user.profile, profile)
-                .where(builder)
+                .join(user.profileRequests, profileRequest)
+                .where(builder
+                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
+                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED)))
                 .fetchCount();
 
         return new PageImpl<>(result, pageable, total);

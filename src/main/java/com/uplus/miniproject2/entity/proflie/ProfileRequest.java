@@ -35,4 +35,5 @@ public class ProfileRequest {
         this.requestType = requestType;
         this.requestStatus = requestStatus;
     }
+
 }

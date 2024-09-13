@@ -1,6 +1,7 @@
 package com.uplus.miniproject2.entity.hobby;
 
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
