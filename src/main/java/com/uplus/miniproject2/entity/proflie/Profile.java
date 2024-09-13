@@ -1,7 +1,9 @@
 package com.uplus.miniproject2.entity.proflie;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.uplus.miniproject2.entity.hobby.Hobby;
 import com.uplus.miniproject2.entity.user.User;
+import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,15 +36,16 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "profile","user"}) // 사용자 데이터 직렬화, 무한 루프 가능성방지, 필요한 데이터만 찾기 위해사용
     private User user;
-
     @Enumerated(EnumType.STRING)
     private MBTI mbti;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer"}) // 지역 데이터 직렬화
     private Region region;
 
     private String major;
