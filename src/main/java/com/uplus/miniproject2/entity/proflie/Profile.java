@@ -22,8 +22,9 @@ public class Profile {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "profile","user"}) // 사용자 데이터 직렬화, 무한 루프 가능성방지, 필요한 데이터만 찾기 위해사용
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "profile", "user"}) // 사용자 데이터 직렬화, 무한 루프 가능성방지, 필요한 데이터만 찾기 위해사용
     private User user;
+
     @Enumerated(EnumType.STRING)
     private MBTI mbti;
 
@@ -46,15 +47,13 @@ public class Profile {
     )
     private List<Hobby> hobbies = new ArrayList<>();
 
-    private String niceExperience;
-
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 
     @Builder
-
-    public Profile(User user, MBTI mbti, Region region, String major, String plan, List<Hobby> hobbies, String niceExperience, byte[] image) {
+    public Profile(User user, MBTI mbti, Region region, String major, String plan, List<Hobby> hobbies,
+                   String niceExperience, byte[] image) {
         this.user = user;
         this.mbti = mbti;
         this.region = region;
@@ -69,7 +68,8 @@ public class Profile {
         this.image = imageData;
     }
 
-    public void updateProfile(MBTI mbti, Region region, String major, String plan, String niceExperience, List<Hobby> hobbies, byte[] image) {
+    public void updateProfile(MBTI mbti, Region region, String major, String plan, String niceExperience,
+                              List<Hobby> hobbies, byte[] image) {
         this.mbti = mbti;
         this.region = region;
         this.major = major;
