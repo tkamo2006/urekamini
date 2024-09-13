@@ -3,22 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U+ Home Page</title>
+    <title>유레카 정보 관리</title>
     <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/mainPage.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-    <!-- Bootstrap Icons 추가 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        .btn-custom {
+            background-color: #ff007f;
+            color: white;
+            height: 45px;
+            padding: 0 15px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .btn-custom:hover {
+            background-color: #ff005f;
+            color: white;
+        }
+
+        .card:hover .view-details {
+            display: block;
+        }
+
+        .profile-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .view-details {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: none; /* Hidden by default */
+        }
+
+        .profile-card:hover .view-details {
+            display: block; /* Show on hover */
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .modal-body h5 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-<header></header>  <!-- 이 곳에 navbar.html이 동적으로 로드!! -->
+
+<header></header>
 
 <div class="container" style="margin-left: 250px; padding-top: 20px;">
-    <h1>메인 페이지</h1>
-    <p>콘텐츠</p>
+    <!-- 검색창 -->
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end mb-4">
+            <form id="search-form" class="d-flex">
+                <input id="name" class="form-control me-2" type="text" placeholder="이름" aria-label="이름">
+                <input id="major" class="form-control me-2" type="text" placeholder="전공" aria-label="전공">
+                <select id="mbti" class="form-select me-2" aria-label="MBTI">
+                    <option value="">MBTI</option>
+                    <option value="ISTJ">ISTJ</option>
+                    <option value="ESTJ">ESTJ</option>
+                    <option value="INTJ">INTJ</option>
+                    <option value="ENTJ">ENTJ</option>
+                    <option value="ISFJ">ISFJ</option>
+                    <option value="ESFJ">ESFJ</option>
+                    <option value="INFJ">INFJ</option>
+                    <option value="ENFJ">ENFJ</option>
+                    <option value="ISTP">ISTP</option>
+                    <option value="ESTP">ESTP</option>
+                    <option value="INTP">INTP</option>
+                    <option value="ENTP">ENTP</option>
+                    <option value="ISFP">ISFP</option>
+                    <option value="ESFP">ESFP</option>
+                    <option value="INFP">INFP</option>
+                    <option value="ENFP">ENFP</option>
+                </select>
+                <select id="gender" class="form-select me-2" aria-label="성별">
+                    <option value="">성별</option>
+                    <option value="male">남성</option>
+                    <option value="female">여성</option>
+                </select>
+                <button class="btn btn-custom" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row" id="user-cards">
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="pagination">
+        </ul>
+    </div>
+
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #ff007f;">
+                    <h5 class="modal-title text-white" id="userModalLabel">유저 상세 정보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img id="modalProfileImage" src="" class="img-fluid rounded" alt="프로필 이미지" style="width: 100%; height: auto;">
+                        </div>
+                        <div class="col-md-8">
+                            <h5 id="modalUserName"></h5>
+                            <p><strong>성별:</strong> <span id="modalUserGender"></span></p>
+                            <p><strong>MBTI:</strong> <span id="modalUserMbti"></span></p>
+                            <p><strong>사는 지역:</strong> <span id="modalUserRegion"></span></p>
+                            <p><strong>전공:</strong> <span id="modalUserMajor"></span></p>
+                            <p><strong>취미:</strong>
+                                <span id="modalUserHobbies" class="d-inline"></span>
+                            </p>
+                            <p><strong>가장 좋았던 경험:</strong> <span id="modalUserExperience"></span></p>
+                            <p><strong>앞으로의 계획:</strong> <span id="modalUserPlan"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="familiarityBtn" class="btn btn-primary">나와의 친밀도</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/navbar.js"></script>
+
+<script>
+    // 페이지 로드 시 유저 데이터 가져오기
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchUsers();
+
+        document.getElementById('search-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            fetchUsers(0);
+        });
+    });
+
+    function fetchUsers(page = 0) {
+        const name = document.getElementById('name').value;
+        const mbti = document.getElementById('mbti').value;
+        const major = document.getElementById('major').value;
+        const gender = document.getElementById('gender').value;
+
+        fetch(`/api/users?name=${name}&mbti=${mbti}&major=${major}&gender=${gender}&page=${page}&size=9`)
+            .then(response => response.json())
+            .then(data => {
+                renderUserCards(data.response.content);
+                renderPagination(data.response);
+            });
+    }
+
+    function renderUserCards(users) {
+        const userCards = document.getElementById('user-cards');
+        userCards.innerHTML = '';
+
+        users.forEach(user => {
+            const card = `
+                <div class="col-md-4 mb-4">
+                    <div class="card profile-card">
+                        <img src="data:image/png;base64,${user.profileImage}" class="card-img-top" alt="프로필 이미지">
+                        <div class="card-body">
+                            <h5 class="card-title">${user.name}</h5>
+                            <p class="card-text">MBTI: ${user.mbti}</p>
+                            <p class="card-text">사는 지역: ${user.region}</p>
+                            <p class="card-text">전공: ${user.major}</p>
+                            <button class="btn btn-primary view-details" onclick="openUserModal(${user.userId})">더 알아보기</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            userCards.innerHTML += card;
+        });
+    }
+
+    function openUserModal(userId) {
+        fetch(`/api/users/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                const user = data.response;
+                document.getElementById('modalProfileImage').src = `data:image/png;base64,${user.profileImage}`;
+                document.getElementById('modalUserName').innerText = user.name;
+                const gender = user.gender === 'male' ? '남성' : '여성';
+                document.getElementById('modalUserGender').innerText = gender;
+                document.getElementById('modalUserMbti').innerText = user.mbti;
+                document.getElementById('modalUserRegion').innerText = user.region;
+                document.getElementById('modalUserMajor').innerText = user.major;
+
+                const hobbiesList = document.getElementById('modalUserHobbies');
+                hobbiesList.innerHTML = '';  // 기존 취미 초기화
+                user.hobbies.forEach(hobby => {
+                    hobbiesList.innerHTML += `<span class="badge bg-pink text-white me-2" style="font-size: 1.025rem; padding: 10px 15px;">${hobby.name}</span>`;
+                });
+
+                document.getElementById('modalUserExperience').innerText = user.niceExperience;
+                document.getElementById('modalUserPlan').innerText = user.plan;
+
+                // Update the link to pass the userId
+                const familiarityBtn = document.getElementById('familiarityBtn');
+                familiarityBtn.href = `/familiarity.html?userId=${userId}`;
+
+                const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+                userModal.show();
+            });
+    }
+
+    function renderPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (pageData.totalPages > 1) {
+            if (pageData.number > 0) {
+                pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="fetchUsers(${pageData.number - 1})">이전</a></li>`;
+            }
+
+            for (let i = 0; i < pageData.totalPages; i++) {
+                pagination.innerHTML += `<li class="page-item ${i === pageData.number ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="fetchUsers(${i})">${i + 1}</a></li>`;
+            }
+
+            if (pageData.number < pageData.totalPages - 1) {
+                pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="fetchUsers(${pageData.number + 1})">다음</a></li>`;
+            }
+        }
+    }
+</script>
 </body>
 </html>
 
