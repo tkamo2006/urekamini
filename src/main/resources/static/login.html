@@ -99,7 +99,7 @@
     <form class="login-form" id="loginForm">
         <h1>로그인</h1>
         <label for="username">사용자 이름:</label>
-        <input type="text" id="username" name="username"  value="admin" required>
+        <input type="text" id="username" name="username" value="admin" required>
 
         <label for="password">비밀번호:</label>
         <input type="password" id="password" name="password" value="1234" required>
@@ -108,17 +108,17 @@
         <div class="signup-link">
             <p>계정이 없으신가요? <a href="signup.html">회원가입</a></p>
         </div>
-        <button type="button" id="btnAdmin">로그아웃</button>
+        <button type="button" id="btnLogout">로그아웃</button>
 
     </form>
 </div>
 
-<script>
-    import { logout } from './auth.js';
+<script type="module">
+    import { logout } from '/js/auth.js';
 
     window.onload = function() {
         document.querySelector("#btnLogin").onclick = login;
-        document.querySelector("#btnAdmin").onclick = logout;
+        document.querySelector("#btnLogout").onclick = logout;
     }
 
     async function login() {
@@ -154,7 +154,6 @@
             alert("로그인 과정에서 오류가 발생했습니다.");
         }
     }
-
 </script>
 </body>
 </html>

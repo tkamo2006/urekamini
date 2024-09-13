@@ -1,3 +1,4 @@
+// auth.js
 export function getAuthHeaders() {
     const accessToken = localStorage.getItem("accessToken");
 
