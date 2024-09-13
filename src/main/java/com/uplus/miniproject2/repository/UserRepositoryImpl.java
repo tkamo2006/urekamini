@@ -61,6 +61,7 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .from(user)
                 .join(user.profile, profile)
                 .where(builder)
+                .orderBy(user.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

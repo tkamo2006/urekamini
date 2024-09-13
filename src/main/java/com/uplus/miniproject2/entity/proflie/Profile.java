@@ -57,19 +57,21 @@ public class Profile {
     )
     private List<Hobby> hobbies = new ArrayList<>();
 
+    private String niceExperience;
+
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] image;
 
     @Builder
-
-    public Profile(User user, MBTI mbti, Region region, String major, String plan, List<Hobby> hobbies, byte[] image) {
+    public Profile(User user, MBTI mbti, Region region, String major, String plan, List<Hobby> hobbies, String niceExperience, byte[] image) {
         this.user = user;
         this.mbti = mbti;
         this.region = region;
         this.major = major;
         this.plan = plan;
         this.hobbies = hobbies;
+        this.niceExperience = niceExperience;
         this.image = image;
     }
 
