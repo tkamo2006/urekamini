@@ -1,6 +1,5 @@
 package com.uplus.miniproject2.jwt;
 
-import com.uplus.miniproject2.entity.user.Role;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,6 +24,12 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
     }
 
+    public Long getId(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
+    }
+
+
     public String getRole(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
@@ -34,11 +39,12 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String username, String role, Long expiredMs) {
+    public String createJwt(Long id, String username, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
+                .claim("id", id)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)

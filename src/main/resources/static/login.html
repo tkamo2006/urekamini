@@ -4,16 +4,16 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U+ Login Page</title>
+    <title>U+ 로그인 페이지</title>
     <style>
-        /* Reset some default styling */
+        /* 기본 스타일 초기화 */
         body, h1, label, input, button {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Set up basic styling for the body */
+        /* 기본 스타일 설정 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -24,7 +24,7 @@
             margin: 0;
         }
 
-        /* Style the login container */
+        /* 로그인 컨테이너 스타일 */
         .login-container {
             background-color: #fff;
             padding: 2rem;
@@ -32,13 +32,13 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style the login form */
+        /* 로그인 폼 스타일 */
         .login-form {
             display: flex;
             flex-direction: column;
         }
 
-        /* Style the form headings */
+        /* 폼 제목 스타일 */
         .login-form h1 {
             margin-bottom: 1rem;
             font-size: 24px;
@@ -46,7 +46,7 @@
             text-align: center;
         }
 
-        /* Style the form labels and inputs */
+        /* 폼 레이블과 입력 필드 스타일 */
         .login-form label {
             margin-bottom: 0.5rem;
             font-size: 16px;
@@ -61,7 +61,7 @@
             font-size: 16px;
         }
 
-        /* Style the submit button */
+        /* 제출 버튼 스타일 */
         .login-form button {
             padding: 0.75rem;
             border: none;
@@ -77,7 +77,7 @@
             background-color: #0056b3;
         }
 
-        /* Style the signup link */
+        /* 회원가입 링크 스타일 */
         .signup-link {
             margin-top: 1rem;
             text-align: center;
@@ -95,139 +95,66 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <form class="login-form" id="loginForm">
-            <h1>Login</h1>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"  value="admin" required>
+<div class="login-container">
+    <form class="login-form" id="loginForm">
+        <h1>로그인</h1>
+        <label for="username">사용자 이름:</label>
+        <input type="text" id="username" name="username"  value="admin" required>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" value="1234" required>
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" name="password" value="1234" required>
 
-            <button type="button" id="btnLogin">Login</button>
-            <div class="signup-link">
-                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
-            </div>
-            <button type="button" id="btnAdmin">ADMIN</button>
+        <button type="button" id="btnLogin">로그인</button>
+        <div class="signup-link">
+            <p>계정이 없으신가요? <a href="signup.html">회원가입</a></p>
+        </div>
+        <button type="button" id="btnAdmin">로그아웃</button>
 
-        </form>
-    </div>
+    </form>
+</div>
 
-    <script>
-        window.onload = function() {
-            document.querySelector("#btnLogin").onclick = login;
-            document.querySelector("#btnAdmin").onclick = logout;
+<script>
+    import { logout } from './auth.js';
+
+    window.onload = function() {
+        document.querySelector("#btnLogin").onclick = login;
+        document.querySelector("#btnAdmin").onclick = logout;
+    }
+
+    async function login() {
+        let username = document.querySelector("#username").value;
+        let password = document.querySelector("#password").value;
+        console.log(username, password);
+        let formData = new FormData();
+        formData.append("username", username);
+        formData.append("password", password);
+        let url = "/login";
+        let fetchOptions = {
+            method: "POST",
+            body: formData
         }
-        async function accessAdminUrl() {
-            // localStorage에서 토큰 읽기
-            let accessToken = localStorage.getItem("accessToken");
-
-            if (!accessToken) {
-                alert("로그인이 필요합니다.");
-                return;
+        try {
+            let response = await fetch(url, fetchOptions);
+            // 응답이 OK인지 확인
+            if (!response.ok) {
+                throw new Error('네트워크 응답이 올바르지 않습니다.');
             }
-
-            let url = "/admin"; // admin role만 접근 가능한 URL
-
-            // 요청 옵션 설정
-            let fetchOptions = {
-                method: "GET", // 필요한 HTTP 메소드 (GET, POST 등)
-                headers: {
-                    "Authorization": "Bearer " + accessToken // Authorization 헤더에 토큰 추가
-                }
-            };
-
-            try {
-                // 서버로 요청 보내기
-                let response = await fetch(url, fetchOptions);
-
-                if (!response.ok) {
-                    // 요청 실패 시 오류 처리
-                    if (response.status === 403) {
-                        alert("접근 권한이 없습니다.");
-                    } else {
-                        throw new Error("Network response was not ok");
-                    }
-                } else {
-                    // 클라이언트에서 JSON 형식이 아닌 응답을 받을 경우를 대비
-                    const contentType = response.headers.get("content-type");
-                    let data;
-                    // 요청 성공 시 응답 처리
-                    if (contentType && contentType.indexOf("application/json") !== -1) {
-                        data = await response.json();
-                    } else {
-                        data = await response.text(); // Handle non-JSON response
-                    }
-                    console.log("Admin data:", data);
-                    // 필요에 따라 data를 사용
-                }
-
-            } catch (error) {
-                console.error("Error during access to admin URL:", error);
-                alert("요청 과정에서 오류가 발생했습니다.");
+            // 응답 헤더에서 Access Token 추출
+            let authorizationHeader = response.headers.get("Authorization");
+            if (authorizationHeader) {
+                // "Authorization" 헤더에서 토큰 추출
+                let accessToken = authorizationHeader.replace("Bearer ", "");
+                // Access Token을 로컬 스토리지에 저장
+                localStorage.setItem("accessToken", accessToken);
+                alert("로그인에 성공하였습니다.");
+                window.location.href = "index.html";
             }
+        } catch (error) {
+            console.error('로그인 중 오류 발생:', error);
+            alert("로그인 과정에서 오류가 발생했습니다.");
         }
+    }
 
-        async function login() {
-            let username = document.querySelector("#username").value;
-            let password = document.querySelector("#password").value;
-            console.log(username, password);
-            let formData = new FormData();
-            formData.append("username", username);
-            formData.append("password", password);
-            let url = "/login";
-            let fetchOptions = {
-                method: "POST",
-                body: formData
-            }
-            try {
-                let response = await fetch(url, fetchOptions);
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                // Extract Access Token from response header
-                let authorizationHeader = response.headers.get("Authorization");
-                if (authorizationHeader) {
-                    // Extract token from the "Authorization" header
-                    let accessToken = authorizationHeader.replace("Bearer ", "");
-                    // Store Access Token in local storage
-                    localStorage.setItem("accessToken", accessToken);
-                    alert("로그인에 성공하였습니다.");
-                    window.location.href = "index.html";
-                }
-            } catch (error) {
-                console.error('Error during login:', error);
-                alert("로그인 과정에서 오류가 발생했습니다.");
-            }
-        }
-
-
-        async function logout() {
-            try {
-                console.log("로그아웃");
-                let response = await fetch('/logout', {
-                    method: 'POST',
-                    credentials: 'include', // Include cookies with the request
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    localStorage.removeItem("accessToken");
-                    alert("로그아웃 되었습니다.");
-                    window.location.href = "/login.html"; // Redirect to login page
-                } else {
-                    alert("로그아웃에 실패했습니다.");
-                }
-            } catch (error) {
-                console.error('Error during logout:', error);
-                alert("로그아웃 과정에서 오류가 발생했습니다.");
-            }
-        }
-
-
-    </script>
+</script>
 </body>
 </html>

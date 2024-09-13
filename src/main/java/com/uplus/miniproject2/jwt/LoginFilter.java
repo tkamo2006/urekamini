@@ -47,9 +47,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-
-        String accessToken = jwtUtil.createJwt(username, role, 60*60*100L); // 1 hour
-        String refreshToken = jwtUtil.createJwt(username, role, 24*60*60*100L); // 1 day
+        Long id = customUserDetails.getId();
+        String accessToken = jwtUtil.createJwt(id, username, role, 60*60*100L); // 1 hour
+        String refreshToken = jwtUtil.createJwt(id, username, role, 24*60*60*100L); // 1 day
 
 
         // Set Refresh Token in HttpOnly cookie

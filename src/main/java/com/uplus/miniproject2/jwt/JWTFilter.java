@@ -43,7 +43,9 @@ public class JWTFilter extends OncePerRequestFilter {
             if (refreshToken != null && !jwtUtil.isExpired(refreshToken)) {
                 String username = jwtUtil.getUsername(refreshToken);
                 String role = jwtUtil.getRole(refreshToken).split("_")[1];
-                String newAccessToken = jwtUtil.createJwt(username, role, 60 * 60 * 100L);
+                Long id = jwtUtil.getId(refreshToken);
+
+                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 100L);
 
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
