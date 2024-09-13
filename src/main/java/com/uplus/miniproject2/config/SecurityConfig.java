@@ -50,7 +50,7 @@ public class SecurityConfig {
                         "/join",
                         "/check",
                         "/logout",
-                        "/api/users/",
+                        "/api/**",
                         "/css/**", "/js/**", "/images/**"
                 ).permitAll() // 누구나 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
