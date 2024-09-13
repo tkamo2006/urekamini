@@ -14,4 +14,6 @@ public enum HobbyCategory {
     public String getName() {
         return name;
     }
+
 }
+
