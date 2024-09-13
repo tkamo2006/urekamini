@@ -14,7 +14,7 @@ public class HobbyFamiliarityCalculator {
             for (Hobby hobby2 : hobbies2) {
                 if (hobby1.getHobbyCategory() == HobbyCategory.ETC && hobby2.getHobbyCategory() == HobbyCategory.ETC) {
                     if (isMatch(hobby1.getName(), hobby2.getName())) {
-                        score += 7;
+                        score += 5;
                     }
 
                     continue;
