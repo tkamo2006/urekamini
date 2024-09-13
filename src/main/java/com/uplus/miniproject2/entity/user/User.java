@@ -45,4 +45,36 @@ public class User {
         this.role = role;
         this.gender = gender;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public List<HobbyBoard> getHobbyBoards() {
+        return hobbyBoards;
+    }
 }

@@ -1,0 +1,41 @@
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+/* 지도 컨테이너 스타일 */
+.map-container {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.map-container:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    border-color: #ccc;
+}
+
+/* 모바일 화면에서의 스타일 조정 */
+@media (max-width: 768px) {
+    .map-container {
+        height: 500px; /* 작은 화면에서의 높이 조정 */
+    }
+}
+
+element.style {
+    cursor: default;
+    position: absolute;
+    background: rgb(255, 255, 255);
+    border: 1px solid rgb(118, 129, 168);
+    z-index: 0;
+    display: block;
+    left: 530px;
+    top: 296px;
+    width: 75px;
+    height: 43px;
+}
