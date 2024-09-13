@@ -11,6 +11,10 @@ export function getAuthHeaders() {
     };
 }
 
+export function isLoggedIn() {
+    return !!localStorage.getItem('accessToken');
+}
+
 export async function logout() {
     try {
         console.log("로그아웃");

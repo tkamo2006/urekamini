@@ -27,7 +27,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @PostMapping("")
+    @PostMapping
     public ApiUtil.ApiSuccess<?> createProfileRequest(
             @RequestParam("userId") Long userId,
             @RequestParam("mbti") String mbti,
@@ -47,7 +47,7 @@ public class ProfileController {
         return ApiUtil.success(profileRequest);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ApiUtil.ApiSuccess<?> getProfileRequests(@RequestParam("adminId") Long adminId) {
         List<ProfilePageProfileRequestDto> requests = profileService.getProfileRequests(adminId);
 
