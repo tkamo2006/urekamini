@@ -51,7 +51,7 @@ public class SecurityConfig {
                         "/check",
                         "/logout",
                         "/api/**",
-                        "/css/**", "/js/**", "/images/**"
+                        "/css/**", "/js/**", "/img/**"
                 ).permitAll() // 누구나 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
                 .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요

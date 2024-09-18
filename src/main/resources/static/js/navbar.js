@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 logoutBtn.style.display = 'block';
                 loginBtn.style.display = 'none';
                 logoutBtn.addEventListener('click', function () {
-                    localStorage.removeItem('accessToken');
-                    window.location.href = '/login.html';
+                    // auth.js에 있는 logout 함수 호출
+                    logout();
                 });
             } else {
                 loginBtn.style.display = 'block';

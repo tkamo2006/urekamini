@@ -38,3 +38,7 @@ export async function logout() {
         alert("로그아웃 과정에서 오류가 발생했습니다.");
     }
 }
+
+
+// 전역 범위에서 호출 가능하게 하기 위해 추가
+window.logout = logout;
