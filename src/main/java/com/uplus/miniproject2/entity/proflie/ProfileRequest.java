@@ -1,23 +1,12 @@
 package com.uplus.miniproject2.entity.proflie;
 
 import com.uplus.miniproject2.entity.user.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "profile_request")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProfileRequest {
 
@@ -29,7 +18,7 @@ public class ProfileRequest {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
@@ -46,4 +35,5 @@ public class ProfileRequest {
         this.requestType = requestType;
         this.requestStatus = requestStatus;
     }
+
 }

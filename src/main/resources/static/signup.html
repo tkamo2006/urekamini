@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유레카 회원가입 페이지</title>
+    <style>
+        /* 기본 스타일 리셋 */
+        body, h1, label, input, button, select {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 기본 본문 스타일 설정 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* 회원가입 컨테이너 스타일 */
+        .signup-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 회원가입 폼 스타일 */
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 폼 제목 스타일 */
+        .signup-form h1 {
+            margin-bottom: 1rem;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* 폼 레이블 및 입력 필드 스타일 */
+        .signup-form label {
+            margin-bottom: 0.5rem;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .signup-form input,
+        .signup-form select {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* 제출 버튼 스타일 */
+        .signup-form button {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF007F;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .signup-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 로그인 링크 스타일 */
+        .login-link {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <form class="signup-form" id="signupForm">
+        <h1>회원가입</h1>
+
+        <label for="name">이름:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="username">사용자명:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="role">역할:</label>
+        <select id="role" name="role" required>
+            <option value="">역할 선택</option>
+            <option value="ADMIN">관리자</option>
+            <option value="USER">사용자</option>
+        </select>
+
+        <label for="gender">성별:</label>
+        <select id="gender" name="gender" required>
+            <option value="">성별 선택</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+            <option value="other">기타</option>
+        </select>
+
+        <button type="button" id="btnSignUp">회원가입</button>
+        <div class="login-link">
+            <p>이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
+        </div>
+    </form>
+</div>
+
+<script>
+    // 페이지 로드 시 실행
+    window.onload = function() {
+        document.querySelector("#btnSignUp").onclick = signUp;
+    }
+
+    // 회원가입 처리 함수
+    async function signUp() {
+        let name = document.querySelector("#name").value;
+        let username = document.querySelector("#username").value;
+        let password = document.querySelector("#password").value;
+        let role = document.querySelector("#role").value;
+        let gender = document.querySelector("#gender").value;
+
+        // JSON 형태로 데이터 구성
+        let data = {
+            name: name,
+            username: username,
+            password: password,
+            role: role,
+            gender: gender
+        };
+
+        let url = "/join";
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" // JSON 형식으로 Content-Type 설정
+            },
+            body: JSON.stringify(data) // JSON 문자열로 변환하여 body에 넣음
+        };
+
+        try {
+            let response = await fetch(url, fetchOptions);
+
+            if (!response.ok) {
+                throw new Error('네트워크 응답이 올바르지 않습니다.');
+            }
+
+            alert("회원가입에 성공하였습니다.");
+            window.location.href = "login.html";
+
+        } catch (error) {
+            console.error('회원가입 중 오류 발생:', error);
+            alert("회원가입 과정에서 오류가 발생했습니다.");
+        }
+    }
+</script>
+</body>
+</html>
