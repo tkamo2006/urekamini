@@ -4,7 +4,7 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U+ 로그인 페이지</title>
+    <title>유레카 로그인 페이지</title>
     <style>
         /* 기본 스타일 초기화 */
         body, h1, label, input, button {
@@ -99,7 +99,7 @@
     <form class="login-form" id="loginForm">
         <h1>로그인</h1>
         <label for="username">사용자 이름:</label>
-        <input type="text" id="username" name="username" value="admin" required>
+        <input type="text" id="username" name="username" value="user1" required>
 
         <label for="password">비밀번호:</label>
         <input type="password" id="password" name="password" value="1234" required>
@@ -108,23 +108,19 @@
         <div class="signup-link">
             <p>계정이 없으신가요? <a href="signup.html">회원가입</a></p>
         </div>
-        <button type="button" id="btnLogout">로그아웃</button>
-
     </form>
 </div>
 
 <script type="module">
-    import { logout } from '/js/auth.js';
 
     window.onload = function() {
         document.querySelector("#btnLogin").onclick = login;
-        document.querySelector("#btnLogout").onclick = logout;
     }
 
     async function login() {
         let username = document.querySelector("#username").value;
         let password = document.querySelector("#password").value;
-        console.log(username, password);
+
         let formData = new FormData();
         formData.append("username", username);
         formData.append("password", password);
@@ -147,7 +143,7 @@
                 // Access Token을 로컬 스토리지에 저장
                 localStorage.setItem("accessToken", accessToken);
                 alert("로그인에 성공하였습니다.");
-                window.location.href = "index.html";
+                window.location.href = "/";
             }
         } catch (error) {
             console.error('로그인 중 오류 발생:', error);

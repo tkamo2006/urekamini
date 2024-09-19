@@ -22,7 +22,15 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        // 리소스 파일 요청은 필터를 통과시키도록 설정
+        String path = request.getRequestURI();
+        if (path.startsWith("/img/") || path.endsWith(".png") || path.endsWith(".jpg")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 요청에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
@@ -61,15 +69,22 @@ public class JWTFilter extends OncePerRequestFilter {
             // 토큰에서 사용자 이름과 역할을 획득
             String username = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token).split("_")[1];
+            Long userId = jwtUtil.getId(token);
 
             // UserEntity를 생성하여 값 설정
-            User user = User.builder().username(username).password("temppassword").role(Role.valueOf(role)).build();
+            User user = User.builder()
+                    .id(userId)
+                    .username(username)
+                    .password("temppassword")
+                    .role(Role.valueOf(role))
+                    .build();
 
             // UserDetails에 사용자 정보 객체 담기
             CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
             // 스프링 시큐리티 인증 토큰 생성
-            Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+            Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+                    customUserDetails.getAuthorities());
 
             // 세션에 사용자 등록
             SecurityContextHolder.getContext().setAuthentication(authToken);

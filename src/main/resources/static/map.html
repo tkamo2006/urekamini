@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U+ Home Page</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>유레카 정보 관리</title>
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/map.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
@@ -74,80 +75,75 @@
     var infowindows = {};
     var userListContainer = document.getElementById('user-list');
 
-    fetch('/api/profiles')
+    fetch('/api/map/profiles')
         .then(response => response.json())
         .then(data => {
             console.log("데이터를 가져왔습니다.", data);
 
-            if (data.response) {
-                data.response.forEach(profile => {
-                    if (profile.region && profile.region.latitude && profile.region.longitude && profile.user && profile.user.name) {
-                        var position = new kakao.maps.LatLng(profile.region.latitude, profile.region.longitude);
+            data.response.forEach(profile => {
+                if (profile.regionName && profile.latitude && profile.longitude && profile.userId && profile.userName) {
+                    var position = new kakao.maps.LatLng(profile.latitude, profile.longitude);
 
-                        var marker = new kakao.maps.Marker({
-                            map: map,
-                            position: position,
-                            title: profile.user.name
-                        });
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: position,
+                        title: profile.userName
+                    });
 
-                        // 정보 창 내용 설정
-                        var infowindow = new kakao.maps.InfoWindow({
-                            content: `<div style="padding: 3px 5px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); font-size: 12px; color: #333; width: 150px; height: auto; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: 'Arial', sans-serif;">
-                                <a href="#" onclick="openUserModal(${profile.user.id}); return false;" style="text-decoration: none; color: #333;">
-                                    <strong style="font-size: 14px; font-weight: bold;">${profile.user.name}</strong>
-                                </a>
-                                <span style="margin-top: 2px; font-size: 12px; color: #666;">${profile.region.name || '주소 정보 없음'}</span>
-                            </div>`
-                        });
+                    // 정보 창 뜨고, 이름 클릭시 모달 창 출력 (함수실행)
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: `<div style="padding: 3px 5px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); font-size: 12px; color: #333; width: 150px; height: auto; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: 'Arial', sans-serif;">
+                            <a href="#" onclick="openUserModal(${profile.userId}); return false;" style="text-decoration: none; color: #333;">
+                                <strong style="font-size: 14px; font-weight: bold;">${profile.userName}</strong>
+                            </a>
+                            <span style="margin-top: 2px; font-size: 12px; color: #666;">${profile.regionName || '주소 정보 없음'}</span>
+                        </div>`
+                    });
 
-                        // 마커와 InfoWindow를 객체에 저장
-                        markers[profile.user.id] = marker;
-                        infowindows[profile.user.id] = infowindow;
+                    // 마커와 InfoWindow를 객체에 저장
+                    markers[profile.userId] = marker;
+                    infowindows[profile.userId] = infowindow;
 
-                        kakao.maps.event.addListener(marker, 'click', function() {
-                            if (infowindow.getMap()) {
-                                infowindow.close();
-                            } else {
-                                infowindow.open(map, marker);
-                            }
-                        });
-
-                        // 사용자 목록 추가
-                        var userItem = document.createElement('div');
-                        userItem.className = 'user-item';
-                        userItem.innerHTML = `<a href="#" data-user-id="${profile.user.id}" style="text-decoration: none; color: #333;">${profile.user.name}</a>`;
-                        userListContainer.appendChild(userItem);
-                    } else {
-                        console.error('Profile 데이터가 부족합니다:', profile);
-                    }
-                });
-
-                // 사용자 목록 클릭 이벤트 추가
-                userListContainer.addEventListener('click', function(event) {
-                    if (event.target.tagName === 'A') {
-                        var userId = event.target.getAttribute('data-user-id');
-                        var marker = markers[userId];
-                        var infowindow = infowindows[userId];
-
-                        if (marker && infowindow) {
-                            if (infowindow.getMap()) {
-                                infowindow.close();
-                            } else {
-                                infowindow.open(map, marker);
-                            }
-                            // 지도 중심을 부드럽게 이동
-                            map.panTo(marker.getPosition());
+                    kakao.maps.event.addListener(marker, 'click', function() {
+                        if (infowindow.getMap()) {
+                            infowindow.close();
+                        } else {
+                            infowindow.open(map, marker);
                         }
+                    });
+
+                    // 사용자 목록 추가
+                    var userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `<a href="#" data-user-id="${profile.userId}" style="text-decoration: none; color: #333;">${profile.userName}</a>`;
+                    userListContainer.appendChild(userItem);
+                } else {
+                    console.error('Profile 데이터가 부족합니다:', profile);
+                }
+            });
+
+            // 사용자 목록 클릭 이벤트 추가
+            userListContainer.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                    var userId = event.target.getAttribute('data-user-id');
+                    var marker = markers[userId];
+                    var infowindow = infowindows[userId];
+
+                    if (marker && infowindow) {
+                        if (infowindow.getMap()) {
+                            infowindow.close();
+                        } else {
+                            infowindow.open(map, marker);
+                        }
+                        // 지도 중심을 부드럽게 이동
+                        map.panTo(marker.getPosition());
                     }
-                });
-            } else {
-                console.error('API 응답 데이터가 올바르지 않습니다:', data);
-            }
+                }
+            });
         })
         .catch(error => {
             console.error('지도를 업데이트하는 중 오류 발생:', error);
         });
-
     function openUserModal(userId) {
         fetch(`/api/users/${userId}`)
             .then(response => response.json())
@@ -176,14 +172,11 @@
 
                 const userModal = new bootstrap.Modal(document.getElementById('userModal'));
                 userModal.show();
-            })
-            .catch(error => {
-                console.error('사용자 정보를 로드하는 중 오류 발생:', error);
             });
     }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/navbar.js"></script>
-</body>
+<script type="module" src="/js/auth.js"></script>
+<script src="/js/navbar.js"></script></body>
 </html>

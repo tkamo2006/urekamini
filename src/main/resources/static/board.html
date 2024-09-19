@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        .card:hover .view-details {
+            display: block;
+        }
+        .view-details {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        .profile-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: scale(1.05);
+        }
+        .btn-custom {
+            background-color: #ff007f;
+            color: white;
+            height: 45px;
+            padding: 0 15px;
+            border: none;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar Include -->
+<header>
+    <!-- Include navbar.html here -->
+    <!-- <include src="/path/to/navbar.html"></include> -->
+</header>
+
+<div class="container" style="margin-left: 250px; padding-top: 20px;">
+    <!-- 글쓰기 버튼 -->
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#writeModal">글쓰기</button>
+    </div>
+
+    <!-- 게시물 목록 -->
+    <div class="row" id="board-posts">
+        <!-- 게시물 카드들이 여기에 추가됩니다 -->
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" id="pagination">
+            <!-- 페이지 버튼들이 여기에 추가됩니다 -->
+        </ul>
+    </div>
+</div>
+
+<!-- 글쓰기 모달 -->
+<div class="modal fade" id="writeModal" tabindex="-1" aria-labelledby="writeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff007f;">
+                <h5 class="modal-title text-white" id="writeModalLabel">글쓰기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="writeForm">
+                    <div class="mb-3">
+                        <label for="postTitle" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="postTitle" placeholder="제목을 입력하세요" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postContent" class="form-label">내용</label>
+                        <textarea class="form-control" id="postContent" rows="5" placeholder="내용을 입력하세요" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/auth.js"></script>
+<script src="/js/navbar.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchPosts();
+
+        document.getElementById('writeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            savePost();
+        });
+    });
+
+    function fetchPosts(page = 0) {
+        fetch(`/api/posts?page=${page}`)
+            .then(response => response.json())
+            .then(data => {
+                renderPostCards(data.response.content);
+                renderPagination(data.response);
+            });
+    }
+
+    function renderPostCards(posts) {
+        const postCards = document.getElementById('board-posts');
+        postCards.innerHTML = '';
+
+        posts.forEach(post => {
+            const card = `
+                <div class="col-md-4 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${post.title}</h5>
+                            <p class="card-text">${post.content.substring(0, 100)}...</p>
+                            <a href="detail.html?postId=${post.id}" class="btn btn-primary">자세히 보기</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            postCards.innerHTML += card;
+        });
+    }
+
+    function renderPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (pageData.totalPages > 1) {
+            if (pageData.number > 0) {
+                pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="fetchPosts(${pageData.number - 1})">이전</a></li>`;
+            }
+
+            for (let i = 0; i < pageData.totalPages; i++) {
+                pagination.innerHTML += `<li class="page-item ${i === pageData.number ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="fetchPosts(${i})">${i + 1}</a></li>`;
+            }
+
+            if (pageData.number < pageData.totalPages - 1) {
+                pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="fetchPosts(${pageData.number + 1})">다음</a></li>`;
+            }
+        }
+    }
+
+    function savePost() {
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContent').value;
+
+        fetch('/api/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, content })
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('글이 저장되었습니다.');
+                document.querySelector('[data-bs-dismiss="modal"]').click(); // 모달 닫기
+                fetchPosts(); // 게시물 목록 새로 고침
+            });
+    }
+</script>
+
+</body>
+</html>
