@@ -13,13 +13,32 @@
 <body>
 <header></header>
 
-<div class="container" style="margin-left: 250px; padding-top: 20px;">
+<div class="container-fluid" style="margin-left: 250px; padding-top: 20px;">
     <h1>메인 페이지</h1>
 
-    <!-- MBTI 차트 -->
-    <div class="row mb-4">
-        <div class="col-xl-6 col-lg-12">
-            <div class="card shadow">
+    <!-- 네비게이션 탭 -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="mbti-tab" data-bs-toggle="tab" href="#mbti" role="tab" aria-controls="mbti" aria-selected="true">MBTI</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="gender-tab" data-bs-toggle="tab" href="#gender" role="tab" aria-controls="gender" aria-selected="false">남녀 비율</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="major-tab" data-bs-toggle="tab" href="#major" role="tab" aria-controls="major" aria-selected="false">전공</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="region-tab" data-bs-toggle="tab" href="#region" role="tab" aria-controls="region" aria-selected="false">사는 지역</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="hobbies-tab" data-bs-toggle="tab" href="#hobbies" role="tab" aria-controls="hobbies" aria-selected="false">취미</a>
+        </li>
+    </ul>
+
+    <!-- 탭 콘텐츠 -->
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="mbti" role="tabpanel" aria-labelledby="mbti-tab">
+            <div class="card shadow mt-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">MBTI</h6>
                 </div>
@@ -31,9 +50,8 @@
             </div>
         </div>
 
-        <!-- 남녀 비율 프로그레스 바 -->
-        <div class="col-xl-6 col-lg-12">
-            <div class="card shadow">
+        <div class="tab-pane fade" id="gender" role="tabpanel" aria-labelledby="gender-tab">
+            <div class="card shadow mt-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">남녀 비율</h6>
                 </div>
@@ -45,12 +63,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 전공 및 사는 지역 차트 카드 -->
-    <div class="row mb-4">
-        <div class="col-xl-6 col-lg-12">
-            <div class="card shadow">
+        <div class="tab-pane fade" id="major" role="tabpanel" aria-labelledby="major-tab">
+            <div class="card shadow mt-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">전공</h6>
                 </div>
@@ -60,8 +75,8 @@
             </div>
         </div>
 
-        <div class="col-xl-6 col-lg-12">
-            <div class="card shadow">
+        <div class="tab-pane fade" id="region" role="tabpanel" aria-labelledby="region-tab">
+            <div class="card shadow mt-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">사는 지역</h6>
                 </div>
@@ -72,12 +87,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 취미 프로그레스 바 카드 -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
+        <div class="tab-pane fade" id="hobbies" role="tabpanel" aria-labelledby="hobbies-tab">
+            <div class="card shadow mt-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">취미</h6>
                 </div>
@@ -212,6 +224,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false, // 비율 유지 비활성화
                     plugins: {
                         legend: {
                             display: true,

@@ -2,14 +2,18 @@
 .chart-container {
     position: relative;
     height: 400px;
-    width: 100%;
+    width: 400px;
 }
 
 #myPieChart {
     height: 100%;
     width: 100%;
 }
-
+#major-bar-chart {
+    width: 100%; /* 너비를 부모 요소에 맞춤 */
+    max-width: 600px; /* 최대 너비 설정 */
+    height: 400px; /* 높이 설정 */
+}
 
 /* statistics.css */
 
@@ -30,7 +34,8 @@
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8); /* 텍스트 그림자 */
     font-weight: bold; /* 글자 두께 */
     text-align: center; /* 글자 중앙 정렬 */
-    line-height: 1.5; /* 글자 높이 조정 */
+    font-size: 14px; /* 비율 텍스트의 크기를 조정 */
+    line-height: 25px; /* 텍스트의 수직 정렬 조정 */
 }
 
 /* 색상 배경을 위한 CSS 클래스 */
