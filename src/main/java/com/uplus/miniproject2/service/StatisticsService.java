@@ -1,6 +1,7 @@
 package com.uplus.miniproject2.service;
 
 import com.uplus.miniproject2.entity.hobby.Hobby;
+import com.uplus.miniproject2.entity.proflie.MBTI;
 import com.uplus.miniproject2.entity.proflie.Profile;
 import com.uplus.miniproject2.repository.StatisticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class StatisticsService {
     @Autowired
     private StatisticsRepository statisticsRepository;
 
-    public Map<List<Hobby>, Long> getHobbiesCount() {
-        List<Profile> profiles = statisticsRepository.findAll();
-        return profiles.stream()
-                .collect(Collectors.groupingBy(Profile::getHobbies, Collectors.counting()));
+    public Map<MBTI, Long> getMbtiCounts() {
+        return statisticsRepository.findAll()
+                .stream()
+                .collect(Collectors.groupingBy(Profile::getMbti, Collectors.counting()));
     }
 }
