@@ -2,14 +2,7 @@ package com.uplus.miniproject2.entity.hobby;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.uplus.miniproject2.entity.user.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,14 +25,27 @@ public class HobbyBoard {
     private String title;
     private String description;
     private String videoLink;
+
+    @Enumerated(EnumType.STRING)
+    private HobbyCategory hobbyCategory;
     private int thumbsUp;
 
     @Builder
-    public HobbyBoard(User user, String title, String description, String videoLink, int thumbsUp) {
+    public HobbyBoard(User user, String title, String description, String videoLink, HobbyCategory hobbyCategory, int thumbsUp) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.videoLink = videoLink;
+        this.hobbyCategory = hobbyCategory;
         this.thumbsUp = thumbsUp;
+    }
+
+    public void updateThumbsUp(int thumbsUp) {
+        this.thumbsUp = thumbsUp;
+    }
+
+    public void updateBoard(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
 }

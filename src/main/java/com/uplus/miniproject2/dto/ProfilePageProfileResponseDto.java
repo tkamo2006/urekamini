@@ -18,5 +18,5 @@ public class ProfilePageProfileResponseDto {
     private String plan;
     private String niceExperience;
     private byte[] profileImage;
-    private List<Hobby> hobbies;
+    private List<String> hobbies;
 }
