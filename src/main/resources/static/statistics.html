@@ -230,17 +230,21 @@
                 return;
             }
 
+            // 전체 취미 수 계산
+            const totalHobbies = Object.values(hobbiesObject).reduce((acc, count) => acc + count, 0);
+
             const hobbiesContainer = document.getElementById('hobby-progress-bars');
 
             for (const [hobby, count] of Object.entries(hobbiesObject)) {
+                const percentage = totalHobbies > 0 ? (count * 100.0 / totalHobbies) : 0;
                 const progressBarContainer = document.createElement('div');
                 progressBarContainer.className = 'mb-3';
                 progressBarContainer.innerHTML = `
-                    <strong>${hobby} ${count}%</strong>
-                    <div class="progress mt-2">
-                        <div class="progress-bar" role="progressbar" style="width: ${count}%; background-color: #4e73df;" aria-valuenow="${count}" aria-valuemin="0" aria-valuemax="100">${count}%</div>
-                    </div>
-                `;
+                <strong>${hobby} ${Math.round(percentage)}%</strong>
+                <div class="progress mt-2">
+                    <div class="progress-bar" role="progressbar" style="width: ${percentage}%; background-color: #4e73df;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">${Math.round(percentage)}%</div>
+                </div>
+            `;
                 hobbiesContainer.appendChild(progressBarContainer);
             }
         })
