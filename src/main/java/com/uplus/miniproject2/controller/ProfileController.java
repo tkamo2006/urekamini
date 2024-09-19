@@ -1,24 +1,14 @@
 package com.uplus.miniproject2.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
-import com.uplus.miniproject2.entity.hobby.Hobby;
-import com.uplus.miniproject2.entity.proflie.Profile;
-import com.uplus.miniproject2.entity.proflie.ProfileRequest;
-import com.uplus.miniproject2.entity.proflie.RequestType;
 import com.uplus.miniproject2.service.ProfileService;
 import com.uplus.miniproject2.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 @RestController
@@ -43,7 +33,7 @@ public class ProfileController {
 
 
         List<String> subHobbies = profileService.parseJsonArray(subHobbiesJson);
-        byte[] imageBytes = profileImage != null ? profileImage.getBytes() : Objects.requireNonNull(getClass().getResourceAsStream("/static/img.png")).readAllBytes();
+        byte[] imageBytes = profileImage != null ? profileImage.getBytes() : Objects.requireNonNull(getClass().getResourceAsStream("/static/img/img.png")).readAllBytes();
 
         ProfilePageProfileResponseDto profileResponseDto
                 = new ProfilePageProfileResponseDto(major, mbti, region, plan, niceExperience,imageBytes, subHobbies);
