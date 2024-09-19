@@ -1,5 +1,6 @@
 package com.uplus.miniproject2.config;
 
+
 import com.uplus.miniproject2.jwt.JWTFilter;
 import com.uplus.miniproject2.jwt.JWTUtil;
 import com.uplus.miniproject2.jwt.LoginFilter;
@@ -49,9 +50,8 @@ public class SecurityConfig {
                         "/",
                         "/join",
                         "/check",
-                        "/logout",
                         "/api/**",
-                        "/css/**", "/js/**", "/images/**"
+                        "/css/**", "/js/**", "/img/**"
                 ).permitAll() // 누구나 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
                 .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요

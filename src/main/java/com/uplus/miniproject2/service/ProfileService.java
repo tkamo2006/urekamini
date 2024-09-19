@@ -29,7 +29,8 @@ public class ProfileService {
     private final CustomUserRepository userRepository;
     private final HobbyRepository hobbyRepository;
 
-    public ProfilePageProfileRequestDto createProfileRequest(Long userId, ProfilePageProfileResponseDto profileResponseDto) {
+    public ProfilePageProfileRequestDto createProfileRequest(Long userId,
+                                                             ProfilePageProfileResponseDto profileResponseDto) {
         User user = userRepository.findById(userId);
         RequestType requestType;
         Profile profile;
@@ -70,7 +71,7 @@ public class ProfileService {
             region = new Region(profileResponseDto.getRegion(), 0, 0); // 지역 입력 방식은 별도로 처리 필요
             // 기존 프로필이 있는 경우 업데이트
             profile = user.getProfile();
-            profile.updateProfile(MBTI.valueOf(profileResponseDto.getMbti()),region,profileResponseDto.getMajor(),
+            profile.updateProfile(MBTI.valueOf(profileResponseDto.getMbti()), region, profileResponseDto.getMajor(),
                     profileResponseDto.getPlan(), profileResponseDto.getNiceExperience(),
                     hobbies, profileResponseDto.getProfileImage());
         }
@@ -93,7 +94,7 @@ public class ProfileService {
                 profile.getHobbies(),
                 request.getRequestType(),
                 request.getRequestStatus()
-                );
+        );
     }
 
     public List<ProfilePageProfileRequestDto> getProfileRequests(Long adminId) {

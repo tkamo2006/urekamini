@@ -25,6 +25,13 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // 리소스 파일 요청은 필터를 통과시키도록 설정
+        String path = request.getRequestURI();
+        if (path.startsWith("/img/") || path.endsWith(".png") || path.endsWith(".jpg")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 요청에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
 
