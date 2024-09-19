@@ -17,9 +17,9 @@
     <h1>메인 페이지</h1>
 
     <!-- MBTI 차트 -->
-    <div class="row">
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+    <div class="row mb-4">
+        <div class="col-xl-6 col-lg-12">
+            <div class="card shadow">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">MBTI</h6>
                 </div>
@@ -32,8 +32,8 @@
         </div>
 
         <!-- 남녀 비율 프로그레스 바 -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+        <div class="col-xl-6 col-lg-12">
+            <div class="card shadow">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">남녀 비율</h6>
                 </div>
@@ -45,10 +45,12 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 전공 카드 -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+    <!-- 전공 및 사는 지역 차트 카드 -->
+    <div class="row mb-4">
+        <div class="col-xl-6 col-lg-12">
+            <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">전공</h6>
                 </div>
@@ -58,9 +60,8 @@
             </div>
         </div>
 
-        <!-- 사는 지역 차트 카드 -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+        <div class="col-xl-6 col-lg-12">
+            <div class="card shadow">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
                     <h6 class="m-0 font-weight-bold text-primary">사는 지역</h6>
                 </div>
@@ -71,10 +72,12 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 취미 프로그레스 바 카드 -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
+    <!-- 취미 프로그레스 바 카드 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">취미</h6>
                 </div>
@@ -240,11 +243,11 @@
                 const progressBarContainer = document.createElement('div');
                 progressBarContainer.className = 'mb-3';
                 progressBarContainer.innerHTML = `
-                <strong>${hobby} ${Math.round(percentage)}%</strong>
-                <div class="progress mt-2">
-                    <div class="progress-bar" role="progressbar" style="width: ${percentage}%; background-color: #4e73df;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">${Math.round(percentage)}%</div>
-                </div>
-            `;
+                    <strong>${hobby} ${Math.round(percentage)}%</strong>
+                    <div class="progress mt-2">
+                        <div class="progress-bar" role="progressbar" style="width: ${percentage}%; background-color: #4e73df;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">${Math.round(percentage)}%</div>
+                    </div>
+                `;
                 hobbiesContainer.appendChild(progressBarContainer);
             }
         })
