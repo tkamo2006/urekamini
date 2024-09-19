@@ -1,5 +1,6 @@
 package com.uplus.miniproject2.config;
 
+
 import com.uplus.miniproject2.jwt.JWTFilter;
 import com.uplus.miniproject2.jwt.JWTUtil;
 import com.uplus.miniproject2.jwt.LoginFilter;
@@ -49,7 +50,6 @@ public class SecurityConfig {
                         "/",
                         "/join",
                         "/check",
-                        "/logout",
                         "/api/**",
                         "/css/**", "/js/**", "/img/**"
                 ).permitAll() // 누구나 접근 가능

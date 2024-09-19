@@ -375,7 +375,6 @@
             userCards.innerHTML += card;
         });
     }
-
     function openUserModal(userId) {
         fetch(`/api/users/${userId}`)
             .then(response => response.json())
@@ -398,15 +397,41 @@
                 document.getElementById('modalUserExperience').innerText = user.niceExperience;
                 document.getElementById('modalUserPlan').innerText = user.plan;
 
-                // Update the link to pass the userId
+                // Familiarity 버튼 링크 업데이트
                 const familiarityBtn = document.getElementById('familiarityBtn');
                 familiarityBtn.href = `/familiarity.html?userId=${userId}`;
+
+                // Familiarity 버튼 클릭 시 권한 검사 추가
+                familiarityBtn.removeEventListener('click', handleFamiliarityClick); // 기존 리스너 제거
+                familiarityBtn.addEventListener('click', handleFamiliarityClick);
+
+                function handleFamiliarityClick(event) {
+                    event.preventDefault(); // 기본 동작 중단
+
+                    // 권한 확인 API 호출
+                    sendRequestWithToken(familiarityBtn.href, 'GET')
+                        .then(response => {
+                            if (response.status === 200) {
+                                window.location.href = familiarityBtn.href; // 권한이 있는 경우 페이지 이동
+                            } else if (response.status === 401) {
+                                alert('권한이 필요합니다.');
+                                window.location.href = '/login.html'; // 권한이 없는 경우 로그인 페이지로 이동
+                            }
+                        })
+                        .catch(error => {
+                            if (error.message === 'No access token available') {
+                                alert('로그인이 필요합니다.');
+                                window.location.href = '/login.html';
+                            } else {
+                                console.error('Error:', error);
+                            }
+                        });
+                }
 
                 const userModal = new bootstrap.Modal(document.getElementById('userModal'));
                 userModal.show();
             });
     }
-
     function renderPagination(pageData) {
         const pagination = document.getElementById('pagination');
         pagination.innerHTML = '';

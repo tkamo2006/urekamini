@@ -53,6 +53,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 
         // Set Refresh Token in HttpOnly cookie
+        // 리프레시 토큰이 HttpOnly, Secure 속성으로 쿠키에 저장되어 있을 때, 브라우저는 이를 서버로 자동으로 전송
         // Cookie 객체를 생성
         Cookie cookie = new Cookie("Refresh-Token", refreshToken);
         cookie.setHttpOnly(true); // JavaScript에서 접근할 수 없게
