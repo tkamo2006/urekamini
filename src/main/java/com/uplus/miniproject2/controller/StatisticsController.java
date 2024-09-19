@@ -14,13 +14,44 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/hobbies")
+@RequestMapping("/api")
 public class StatisticsController {
-    private StatisticsService statisticsService;
+    private final StatisticsService statisticsService;
 
+
+    // MBTI 작업
     @GetMapping("/mbti")
     public ApiUtil.ApiSuccess<Map<MBTI, Long>> getMbtiCounts() {
         Map<MBTI, Long> mbtiCounts = statisticsService.getMbtiCounts();
         return ApiUtil.success(mbtiCounts);
+    }
+
+
+    // 성별 비율 작업
+    @GetMapping("/gender")
+    public ApiUtil.ApiSuccess<Map<String, Integer>> getGenderRatio() {
+        Map<String, Integer> genderRatio = statisticsService.getGenderRatio();
+        return ApiUtil.success(genderRatio);
+    }
+
+    // 전공별 수 작업
+    @GetMapping("/major")
+    public ApiUtil.ApiSuccess<Map<String, Long>> getMajorCounts() {
+        Map<String, Long> majorCounts = statisticsService.getMajorCounts();
+        return ApiUtil.success(majorCounts);
+    }
+
+    // 취미 작업
+    @GetMapping("/hobbies")
+    public ApiUtil.ApiSuccess<Map<String, Long>> getHobbyCounts() {
+        Map<String, Long> hobbyCounts = statisticsService.getHobbyCounts();
+        return ApiUtil.success(hobbyCounts);
+    }
+
+    // 사는 지역 작업
+    @GetMapping("/region")
+    public ApiUtil.ApiSuccess<Map<String, Long>> getRegionCounts() {
+        Map<String, Long> regionCounts = statisticsService.getRegionCounts();
+        return ApiUtil.success(regionCounts);
     }
 }

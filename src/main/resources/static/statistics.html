@@ -16,36 +16,6 @@
 <div class="container" style="margin-left: 250px; padding-top: 20px;">
     <h1>메인 페이지</h1>
 
-    <!-- 호감도 차트 -->
-    <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">수익 개요</h6>
-                <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                         aria-labelledby="dropdownMenuLink">
-                        <div class="dropdown-header">드롭다운 메뉴:</div>
-                        <a class="dropdown-item" href="#">액션</a>
-                        <a class="dropdown-item" href="#">다른 액션</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">여기서 뭔가</a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">최고의 짝꿍</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">삼다수</div>
-                <div class="chart-area">
-                    <canvas id="myAreaChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- MBTI 차트 -->
     <div class="row">
         <div class="col-xl-4 col-lg-5">
@@ -56,7 +26,6 @@
                 <div class="card-body">
                     <div class="chart-container">
                         <canvas id="myPieChart"></canvas>
-                        <div id="chart-text" class="chart-text"></div>
                     </div>
                 </div>
             </div>
@@ -70,10 +39,8 @@
                 </div>
                 <div class="card-body">
                     <div class="progress mb-4">
-                        <div id="male-progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 50%;"
-                             aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">남성 50%</div>
-                        <div id="female-progress-bar" class="progress-bar bg-danger" role="progressbar" style="width: 50%;"
-                             aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">여성 50%</div>
+                        <div id="male-progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">남성 50%</div>
+                        <div id="female-progress-bar" class="progress-bar bg-danger" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">여성 50%</div>
                     </div>
                 </div>
             </div>
@@ -85,36 +52,36 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">전공</h6>
                 </div>
-                <div class="card-body" id="projects-card-body">
-                    <!-- 자바스크립트로 전공 데이터 삽입 -->
+                <div class="card-body">
+                    <canvas id="major-bar-chart"></canvas>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 사는 지역 차트 카드 -->
-    <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
-                <h6 class="m-0 font-weight-bold text-primary">사는 지역</h6>
-            </div>
-            <div class="card-body">
-                <div class="chart-container">
-                    <canvas id="PieChart"></canvas>
+        <!-- 사는 지역 차트 카드 -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
+                    <h6 class="m-0 font-weight-bold text-primary">사는 지역</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="region-pie-chart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 취미 바 차트 카드 -->
-    <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-center">
-                <h6 class="m-0 font-weight-bold text-primary">취미</h6>
-            </div>
-            <div class="card-body">
-                <div class="progress mb-4">
-                    <canvas id="dashboardBarChart"></canvas>
+        <!-- 취미 프로그레스 바 카드 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">취미</h6>
+                </div>
+                <div class="card-body">
+                    <div id="hobby-progress-bars">
+                        <!-- 취미 프로그레스 바가 동적으로 추가됩니다 -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,8 +95,7 @@
     fetch('/api/mbti')
         .then(response => response.json())
         .then(data => {
-            const mbtiCounts = data; // MBTI 카운트 데이터가 바로 반환됨
-
+            const mbtiCounts = data.response;
             const labels = Object.keys(mbtiCounts);
             const counts = Object.values(mbtiCounts);
 
@@ -140,14 +106,14 @@
                     labels: labels,
                     datasets: [{
                         data: counts,
-                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#e74a3b', '#f6c23e'],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#e74a3b', '#f6c23e', '#f8b400', '#6c5ce7', '#c7e0f4'],
                     }],
                 },
                 options: {
                     responsive: true,
                     plugins: {
                         legend: {
-                            display: false,
+                            display: true,
                         },
                         tooltip: {
                             callbacks: {
@@ -159,20 +125,27 @@
                     }
                 }
             });
-
-            const maxCount = Math.max(...counts);
-            const mostPopularMbti = labels[counts.indexOf(maxCount)];
-            document.getElementById('chart-text').textContent = `가장 인기 있는 MBTI: ${mostPopularMbti}`;
         })
         .catch(error => console.error('MBTI 데이터 가져오기 오류:', error));
 
     // 남녀 비율 데이터로 프로그레스 바 업데이트
-    fetch('/api/stats/gender-ratio')
+    fetch('/api/gender')
         .then(response => response.json())
         .then(data => {
-            const total = data.male + data.female;
-            const malePercentage = (data.male / total) * 100;
-            const femalePercentage = (data.female / total) * 100;
+            const maleCount = data.response.male || 0;
+            const femaleCount = data.response.female || 0;
+            const total = maleCount + femaleCount;
+
+            if (total === 0) {
+                document.getElementById('male-progress-bar').style.width = '0%';
+                document.getElementById('female-progress-bar').style.width = '0%';
+                document.getElementById('male-progress-bar').textContent = '남성 0%';
+                document.getElementById('female-progress-bar').textContent = '여성 0%';
+                return;
+            }
+
+            const malePercentage = (maleCount / total) * 100;
+            const femalePercentage = (femaleCount / total) * 100;
 
             document.getElementById('male-progress-bar').style.width = `${malePercentage}%`;
             document.getElementById('female-progress-bar').style.width = `${femalePercentage}%`;
@@ -182,54 +155,22 @@
         })
         .catch(error => console.error('남녀 비율 데이터 가져오기 오류:', error));
 
-    // 전공 카드 데이터 삽입
-    // 예제 데이터로 카드 내용 채우기
-    // 자바스크립트 코드 추가
-
-    // 사는 지역 차트 데이터로 차트 생성
-    fetch('/api/region')
+    // 전공 카드 데이터로 바 차트 생성
+    fetch('/api/major')
         .then(response => response.json())
         .then(data => {
-            const regionLabels = Object.keys(data);
-            const regionCounts = Object.values(data);
+            const majorData = data.response;
+            const majorLabels = Object.keys(majorData);
+            const majorCounts = Object.values(majorData);
 
-            const regionCtx = document.getElementById('PieChart').getContext('2d');
-            new Chart(regionCtx, {
-                type: 'pie',
-                data: {
-                    labels: regionLabels,
-                    datasets: [{
-                        data: regionCounts,
-                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#e74a3b', '#f6c23e', '#f8b400', '#6c5ce7'],
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                        },
-                    }
-                }
-            });
-        })
-        .catch(error => console.error('사는 지역 데이터 가져오기 오류:', error));
-
-    // 취미 바 차트 데이터로 차트 생성
-    fetch('/api/hobbies')
-        .then(response => response.json())
-        .then(data => {
-            const hobbyLabels = Object.keys(data);
-            const hobbyCounts = Object.values(data);
-
-            const barCtx = document.getElementById('dashboardBarChart').getContext('2d');
-            new Chart(barCtx, {
+            const majorCtx = document.getElementById('major-bar-chart').getContext('2d');
+            new Chart(majorCtx, {
                 type: 'bar',
                 data: {
-                    labels: hobbyLabels,
+                    labels: majorLabels,
                     datasets: [{
-                        label: '취미',
-                        data: hobbyCounts,
+                        label: '전공 수',
+                        data: majorCounts,
                         backgroundColor: '#4e73df',
                     }],
                 },
@@ -238,10 +179,70 @@
                     scales: {
                         x: {
                             beginAtZero: true
+                        },
+                        y: {
+                            beginAtZero: true
                         }
                     }
                 }
             });
+        })
+        .catch(error => console.error('전공 데이터 가져오기 오류:', error));
+
+    // 사는 지역 데이터로 파이 차트 생성
+    fetch('/api/region')
+        .then(response => response.json())
+        .then(data => {
+            const regionData = data.response;
+            const regionLabels = Object.keys(regionData);
+            const regionCounts = Object.values(regionData);
+
+            const regionCtx = document.getElementById('region-pie-chart').getContext('2d');
+            new Chart(regionCtx, {
+                type: 'pie',
+                data: {
+                    labels: regionLabels,
+                    datasets: [{
+                        data: regionCounts,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#e7e9ed', '#c0c0c0'],
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('사는 지역 데이터 가져오기 오류:', error));
+
+    // 취미 데이터로 프로그레스 바 업데이트
+    fetch('/api/hobbies')
+        .then(response => response.json())
+        .then(data => {
+            const hobbiesObject = data.response;
+
+            if (typeof hobbiesObject !== 'object' || hobbiesObject === null) {
+                console.error('취미 데이터가 유효하지 않습니다:', hobbiesObject);
+                return;
+            }
+
+            const hobbiesContainer = document.getElementById('hobby-progress-bars');
+
+            for (const [hobby, count] of Object.entries(hobbiesObject)) {
+                const progressBarContainer = document.createElement('div');
+                progressBarContainer.className = 'mb-3';
+                progressBarContainer.innerHTML = `
+                    <strong>${hobby} ${count}%</strong>
+                    <div class="progress mt-2">
+                        <div class="progress-bar" role="progressbar" style="width: ${count}%; background-color: #4e73df;" aria-valuenow="${count}" aria-valuemin="0" aria-valuemax="100">${count}%</div>
+                    </div>
+                `;
+                hobbiesContainer.appendChild(progressBarContainer);
+            }
         })
         .catch(error => console.error('취미 데이터 가져오기 오류:', error));
 </script>
