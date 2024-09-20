@@ -4,6 +4,8 @@ import com.uplus.miniproject2.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Arrays;
+
 @Entity
 @Table(name = "profile_request")
 @Getter
@@ -42,4 +44,24 @@ public class ProfileRequest {
         this.requestType = newProfileRequest.requestType;
         this.requestStatus = newProfileRequest.requestStatus;
     }
+  
+  
+      // 명확한 비즈니스 목적을 가진 메서드
+    public void changeRequestStatus(RequestStatus status) {
+        // 이메일 변경에 대한 추가 비즈니스 로직을 여기에 포함할 수 있음
+        if (isValidRequestStatus(status)) {
+            this.requestStatus = status;
+        } else {
+            throw new IllegalArgumentException("Invalid requestStatus");
+        }
+    }
+
+    private boolean isValidRequestStatus(RequestStatus status) {
+        // 주어진 status가 RequestStatus Enum의 값 중 하나인지 확인
+        return status != null && Arrays.asList(RequestStatus.values()).contains(status);
+    }
+  
+  
+
 }
+
