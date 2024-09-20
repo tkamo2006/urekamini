@@ -40,13 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(response => {
                             if (response.status === 200) {
                                 window.location.href = targetUrl; // 권한이 있는 경우 페이지 이동
-                            } else if (response.status === 401) {
-                                alert('권한이 필요합니다.');
-                                window.location.href = '/login.html'; // 권한이 없는 경우 로그인 페이지로 이동
-                            } else {
-                                // 200, 401 외의 다른 상태 코드 처리
-                                console.error(`Unexpected response status: ${response.status}`);
-                                alert('예상치 못한 오류가 발생했습니다.');
                             }
                         })
                         .catch(error => {
