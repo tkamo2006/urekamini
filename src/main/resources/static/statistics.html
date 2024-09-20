@@ -17,18 +17,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem; /* 카드 내용의 패딩을 늘려서 여백을 확보합니다 */
+            padding: 2rem;
         }
         .progress-bar {
             text-align: center;
             color: white;
-            font-size: 1.25rem; /* 폰트 크기를 키워서 텍스트를 크게 표시합니다 */
+            font-size: 1.25rem;
         }
         .progress {
-            height: 2rem; /* 프로그레스 바의 높이를 늘려서 시각적으로 크게 보이게 합니다 */
+            height: 2rem;
         }
         .card-header h6 {
-            font-size: 1.5rem; /* 카드 헤더의 텍스트 크기를 크게 설정합니다 */
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -118,10 +118,14 @@
 <script src="/js/navbar.js"></script>
 <script>
     // MBTI 데이터로 차트 생성
-    fetch('/api/mbti')
+    fetch('/api/statistics/mbti')
         .then(response => response.json())
         .then(data => {
-            const mbtiCounts = data.response;
+            console.log('MBTI 데이터:', data);
+            const mbtiCounts = data.response.reduce((acc, item) => {
+                acc[item.name] = item.count; // 이름과 카운트 매핑
+                return acc;
+            }, {});
             const labels = Object.keys(mbtiCounts);
             const counts = Object.values(mbtiCounts);
 
@@ -155,37 +159,33 @@
         .catch(error => console.error('MBTI 데이터 가져오기 오류:', error));
 
     // 남녀 비율 데이터로 프로그레스 바 업데이트
-    fetch('/api/gender')
+    fetch('/api/statistics/gender')
         .then(response => response.json())
         .then(data => {
-            const maleCount = data.response.male || 0;
-            const femaleCount = data.response.female || 0;
+            console.log('남녀 비율 데이터:', data);
+            const maleCount = data.response[0]?.count || 0; // 남성 카운트
+            const femaleCount = data.response[1]?.count || 0; // 여성 카운트
             const total = maleCount + femaleCount;
 
-            if (total === 0) {
-                document.getElementById('male-progress-bar').style.width = '0%';
-                document.getElementById('female-progress-bar').style.width = '0%';
-                document.getElementById('male-progress-bar').textContent = '남성 0%';
-                document.getElementById('female-progress-bar').textContent = '여성 0%';
-                return;
-            }
-
-            const malePercentage = (maleCount / total) * 100;
-            const femalePercentage = (femaleCount / total) * 100;
+            const malePercentage = total > 0 ? (maleCount / total) * 100 : 0;
+            const femalePercentage = total > 0 ? (femaleCount / total) * 100 : 0;
 
             document.getElementById('male-progress-bar').style.width = `${malePercentage}%`;
             document.getElementById('female-progress-bar').style.width = `${femalePercentage}%`;
-
             document.getElementById('male-progress-bar').textContent = `남성 ${Math.round(malePercentage)}%`;
             document.getElementById('female-progress-bar').textContent = `여성 ${Math.round(femalePercentage)}%`;
         })
         .catch(error => console.error('남녀 비율 데이터 가져오기 오류:', error));
 
     // 전공 카드 데이터로 바 차트 생성
-    fetch('/api/major')
+    fetch('/api/statistics/major')
         .then(response => response.json())
         .then(data => {
-            const majorData = data.response;
+            console.log('전공 데이터:', data);
+            const majorData = data.response.reduce((acc, item) => {
+                acc[item.name] = item.count; // 전공 이름과 카운트 매핑
+                return acc;
+            }, {});
             const majorLabels = Object.keys(majorData);
             const majorCounts = Object.values(majorData);
 
@@ -197,7 +197,7 @@
                     datasets: [{
                         label: '전공 수',
                         data: majorCounts,
-                        backgroundColor: '#4e73df',
+                        backgroundColor: majorLabels.map(() => `hsl(${Math.random() * 360}, 70%, 50%)`), // 랜덤 색상
                     }],
                 },
                 options: {
@@ -207,7 +207,24 @@
                             beginAtZero: true
                         },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value; // Y축 레이블 표시
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}명`; // 툴팁 레이블
+                                }
+                            }
                         }
                     }
                 }
@@ -216,10 +233,14 @@
         .catch(error => console.error('전공 데이터 가져오기 오류:', error));
 
     // 사는 지역 데이터로 파이 차트 생성
-    fetch('/api/region')
+    fetch('/api/statistics/region')
         .then(response => response.json())
         .then(data => {
-            const regionData = data.response;
+            console.log('사는 지역 데이터:', data);
+            const regionData = data.response.reduce((acc, item) => {
+                acc[item.name] = item.count; // 지역 이름과 카운트 매핑
+                return acc;
+            }, {});
             const regionLabels = Object.keys(regionData);
             const regionCounts = Object.values(regionData);
 
@@ -238,13 +259,6 @@
                     plugins: {
                         legend: {
                             display: true,
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw;
-                                }
-                            }
                         }
                     }
                 }
@@ -253,35 +267,33 @@
         .catch(error => console.error('사는 지역 데이터 가져오기 오류:', error));
 
     // 취미 데이터로 프로그레스 바 업데이트
-    fetch('/api/hobbies')
+    fetch('/api/statistics/hobbies')
         .then(response => response.json())
         .then(data => {
+            console.log('취미 데이터:', data); // 데이터 확인용 콘솔 로그
             const hobbiesObject = data.response;
 
-            if (typeof hobbiesObject !== 'object' || hobbiesObject === null) {
-                console.error('취미 데이터가 유효하지 않습니다:', hobbiesObject);
-                return;
-            }
-
-            // 전체 취미 수 계산
-            const totalHobbies = Object.values(hobbiesObject).reduce((acc, count) => acc + count, 0);
-
+            const totalHobbies = hobbiesObject.reduce((sum, item) => sum + item.count, 0); // 총 취미 수 계산
             const hobbiesContainer = document.getElementById('hobby-progress-bars');
+            hobbiesContainer.innerHTML = ''; // 기존 내용 초기화
 
-            for (const [hobby, count] of Object.entries(hobbiesObject)) {
-                const percentage = totalHobbies > 0 ? (count * 100.0 / totalHobbies) : 0;
+            hobbiesObject.forEach(hobby => {
+                const hobbyPercentage = totalHobbies > 0 ? (hobby.count / totalHobbies) * 100 : 0;
                 const progressBarContainer = document.createElement('div');
                 progressBarContainer.className = 'mb-3';
                 progressBarContainer.innerHTML = `
-                    <strong>${hobby} ${Math.round(percentage)}%</strong>
-                    <div class="progress mt-2">
-                        <div class="progress-bar" role="progressbar" style="width: ${percentage}%; background-color: #4e73df;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">${Math.round(percentage)}%</div>
-                    </div>
-                `;
+                <strong>${hobby.name} ${Math.round(hobbyPercentage)}%</strong>
+                <div class="progress mt-2">
+                    <div class="progress-bar" role="progressbar" style="width: ${hobbyPercentage}%; background-color: #4e73df;" aria-valuenow="${hobbyPercentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            `;
                 hobbiesContainer.appendChild(progressBarContainer);
-            }
+            });
         })
         .catch(error => console.error('취미 데이터 가져오기 오류:', error));
+
+
+
 </script>
 </body>
 </html>
