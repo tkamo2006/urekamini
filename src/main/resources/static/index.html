@@ -206,7 +206,18 @@
                             </div>
                             <div class="mb-3">
                                 <label for="region" class="form-label">사는 지역</label>
-                                <input type="text" class="form-control" id="region" placeholder="지역을 입력하세요" required>
+                                <select class="form-select" id="region" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="파주">파주</option>
+                                    <option value="인천">인천</option>
+                                    <option value="익산">익산</option>
+                                    <option value="서울">서울</option>
+                                    <option value="대전">대전</option>
+                                    <option value="대구">대구</option>
+                                    <option value="고양">고양</option>
+                                    <option value="광주">광주</option>
+                                    <option value="시흥">시흥</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="major" class="form-label">전공</label>
@@ -262,6 +273,7 @@
                             <div class="mb-3" id="subHobbiesContainer" style="display: none;">
                                 <label class="form-label">세부 취미</label>
                                 <div class="d-flex flex-wrap" id="subHobbies"></div>
+                                <div class="invalid-feedback" id="subHobbyError" style="display: none;">하나 이상의 세부 취미를 선택하세요.</div>
                             </div>
                         </div>
                     </div>
@@ -341,22 +353,29 @@
     }
 
 
-    // 폼 제출 시 하나 이상의 취미를 선택하게 강제하는 유효성 검사
-    document.getElementById('profileForm').addEventListener('submit', function(event) {
+    // 프로필 저장 로직 (POST)
+    document.getElementById('profileForm').addEventListener('submit', function (e) {
         const hobbies = document.querySelectorAll('.hobby-checkbox:checked');
         const hobbyError = document.getElementById('hobbyError');
+        const subHobbies = document.querySelectorAll('#subHobbies input:checked');
+        const subHobbyError = document.getElementById('subHobbyError'); // 세부 취미 에러 메시지 요소
+
+        // 유효성 검사
         if (hobbies.length === 0) {
-            event.preventDefault(); // 제출 방지
+            e.preventDefault();
             hobbyError.style.display = 'block'; // 에러 메시지 표시
+            return; // 함수 종료
         } else {
             hobbyError.style.display = 'none'; // 에러 메시지 숨기기
         }
-    });
 
-
-    // 프로필 저장 로직 (POST)
-    document.getElementById('profileForm').addEventListener('submit', function (e) {
-        e.preventDefault();
+        if (subHobbies.length === 0) {
+            e.preventDefault();
+            subHobbyError.style.display = 'block'; // 세부 취미 에러 메시지 표시
+            return; // 함수 종료
+        } else {
+            subHobbyError.style.display = 'none'; // 세부 취미 에러 메시지 숨기기
+        }
 
         const formData = new FormData();
         formData.append('niceExperience', document.getElementById('niceExperience').value);
@@ -401,28 +420,43 @@
             });
     });
 
+    // 모달이 열릴 때 프로필 로드
+    document.getElementById('profileModal').addEventListener('show.bs.modal', function (event) {
+        loadUserProfile();
+    });
+
     // 프로필 등록/수정 모달 로드 시 데이터 처리 (GET)
-    function loadUserProfile(userId) {
-        fetch(`/api/profiles/${userId}`)
+    function loadUserProfile() {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+        fetch(`/api/profiles/upload`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+            })
             .then(response => response.json())
             .then(data => {
                 if (data) {
                     // 데이터가 있으면 모달에 해당 정보를 채워줍니다
-                    document.getElementById('niceExperience').value = data.name || '';
-                    document.getElementById('profile_mbti').value = data.mbti || '';
-                    document.getElementById('region').value = data.region || '';
-                    document.getElementById('profile_major').value = data.major || '';
-                    document.getElementById('plan').value = data.plan || '';
+                    document.getElementById('niceExperience').value = data.response.niceExperience || '';
+                    document.getElementById('profile_mbti').value = data.response.mbti || '';
+                    document.getElementById('region').value = data.response.region || '';
+                    document.getElementById('profile_major').value = data.response.major || '';
+                    document.getElementById('plan').value = data.response.plan || '';
 
-                    if (data.profileImage) {
-                        document.getElementById('profilePreview').src = `data:image/png;base64,${data.profileImage}`;
-                    } else {
-                        document.getElementById('profilePreview').src = ''; // 이미지가 없을 경우
-                    }
+                    // if (data.response.profileImage) {
+                    //     document.getElementById('profilePreview').src = `data:image/png;base64,${data.response.profileImage}`;
+                    // } else {
+                    //     document.getElementById('profilePreview').src = '/img/img.png'; // 이미지가 없을 경우
+                    // }
                 } else {
                     // 데이터가 없으면 placeholder 표시
                     document.getElementById('niceExperience').placeholder = '좋았던 경험을 입력하세요';
-                    document.getElementById('region').placeholder = '사는 지역을 입력하세요';
                     document.getElementById('profile_major').placeholder = '전공을 입력하세요';
                     document.getElementById('plan').placeholder = '계획을 입력하세요';
                 }
