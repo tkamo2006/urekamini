@@ -2,15 +2,25 @@ package com.uplus.miniproject2.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uplus.miniproject2.dto.ProfileExistDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
 import com.uplus.miniproject2.entity.hobby.Hobby;
+import com.uplus.miniproject2.dto.ProfileRequestDto;
 import com.uplus.miniproject2.entity.proflie.*;
+import com.uplus.miniproject2.entity.user.CustomUserDetails;
 import com.uplus.miniproject2.entity.user.Role;
 import com.uplus.miniproject2.entity.user.User;
-import com.uplus.miniproject2.repository.*;
+import com.uplus.miniproject2.repository.CustomUserRepository;
+import com.uplus.miniproject2.repository.HobbyRepository;
+import com.uplus.miniproject2.repository.ProfileRepository;
+import com.uplus.miniproject2.repository.ProfileRequestRepository;
+import com.uplus.miniproject2.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -138,5 +148,32 @@ public class ProfileService {
 
     public Profile getProfileByUserId(Long userId) {
         return profileRepository.findByUserId(userId);
+    }
+
+    public Page<ProfileRequestDto> getProfileRequests(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProfileRequest> profileRequests = profileRequestRepository.findAll(pageable);
+
+        return profileRequests.map(profileRequest -> new ProfileRequestDto(
+                profileRequest.getId(),
+                profileRequest.getUser().getId(), // User ID
+                profileRequest.getProfile().getId(), // Profile ID
+                profileRequest.getRequestType().name(), // RequestType as String
+                profileRequest.getRequestStatus().name() // RequestStatus as String
+        ));
+    }
+
+    public ProfileExistDto getProfile(Long loginUserId) {
+        Profile loginUserProfile = profileRepository.findByUserId(loginUserId);
+
+        ProfileExistDto profileExistDto = new ProfileExistDto();
+
+        if (loginUserProfile == null) {
+            profileExistDto.setExist(false);
+        } else {
+            profileExistDto.setExist(true);
+        }
+
+        return profileExistDto;
     }
 }

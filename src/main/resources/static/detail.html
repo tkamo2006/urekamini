@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detail</title>
+  <title>유레카 정보 관리</title>
   <link rel="stylesheet" href="/css/navbar.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -157,6 +157,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/auth.js"></script>
 <script src="/js/navbar.js"></script>
 <script type="module" src="/js/auth.js"></script>
 
@@ -177,10 +178,23 @@
   });
 
   function fetchPostDetail(postId) {
-    fetch(`/api/posts/${postId}`)
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
+    fetch(`/api/posts/${postId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+            })
             .then(response => response.json())
             .then(data => {
               renderPostDetail(data);
+
               updateThumbsUp(data.response.thumbsUp);
               checkOwnership(data.response.userId); // 사용자 확인 함수 호출
             });
@@ -241,7 +255,19 @@
   }
 
   function addThumbsUp(postId) {
-    fetch(`/api/posts/${postId}/thumbsUp`, { method: 'GET' })
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
+    fetch(`/api/posts/${postId}/thumbsUp`, {
+            method: 'GET',
+            headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+            }
+         })
             .then(response => response.json())
             .then(data => {
               updateThumbsUp(data.response);
@@ -254,9 +280,16 @@
     const hobbyCategory = document.getElementById('editHobby').value;
     const videoLink = document.getElementById('editVideoLink').value;
 
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
     fetch(`/api/posts/${postId}`, {
       method: 'POST',
       headers: {
+        'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ title, description, hobbyCategory, videoLink })
@@ -269,8 +302,20 @@
   }
 
   function deletePost(postId) {
+
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
     if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-      fetch(`/api/posts/${postId}`, { method: 'DELETE' })
+      fetch(`/api/posts/${postId}`, { method: 'DELETE',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+       })
               .then(response => {
                 if (response.ok) {
                   alert('게시물이 삭제되었습니다.');

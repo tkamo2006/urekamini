@@ -35,14 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         return;
                     }
 
-                    // API 호출로 권한 확인
+// API 호출로 권한 확인
                     sendRequestWithToken(targetUrl, 'GET')
                         .then(response => {
                             if (response.status === 200) {
                                 window.location.href = targetUrl; // 권한이 있는 경우 페이지 이동
-                            } else if (response.status === 401) {
-                                alert('권한이 필요합니다.');
-                                window.location.href = '/login.html'; // 권한이 없는 경우 로그인 페이지로 이동
                             }
                         })
                         .catch(error => {
@@ -51,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 window.location.href = '/login.html';
                             } else {
                                 console.error('Error:', error);
+                                alert('요청 중 오류가 발생했습니다.');
                             }
                         });
                 });
