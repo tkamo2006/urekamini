@@ -62,19 +62,18 @@ public class ProfileController {
     }
 
 
-//    @GetMapping
-//    public ApiUtil.ApiSuccess<?> getProfileRequests(@RequestParam("adminId") Long adminId) {
-//        List<ProfilePageProfileRequestDto> requests = profileService.getProfileRequests(adminId);
-//
-//        return ApiUtil.success(requests);
-//    }
-
     @GetMapping
     public  ApiUtil.ApiSuccess<?> getProfileRequests(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Page<ProfileRequestDto> profileRequests = profileService.getProfileRequests(page, size);
         return ApiUtil.success(profileRequests);
+    }
+
+    @PutMapping("/{requestId}")
+    public ApiUtil.ApiSuccess<?> updateProfileRequest(@PathVariable Long requestId, @RequestBody ProfileRequestDto requestDto) {
+        profileService.updateProfileRequest(requestId, requestDto.getRequestStatus());
+        return ApiUtil.success("Profile request status updated successfully");
     }
 
     @GetMapping("/check")
