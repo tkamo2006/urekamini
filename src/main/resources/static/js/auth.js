@@ -64,12 +64,26 @@ async function sendRequestWithToken(url, method) {
                 'Authorization': `Bearer ${token}`,
             }
         });
-        console.log(response.status)
+        console.log(response.status);
+
         // 응답 상태가 401인 경우 리프레시 토큰이 만료되었을 수 있음
         if (response.status === 401) {
-            logout()
-            alert('로그인이 필요합니다.');
-            window.location.href = '/login.html'; // 리프레시 토큰이 만료되었을 때 로그인 페이지로 리다이렉트
+            // 로그아웃 요청
+            const logoutResponse = await fetch('/logout', {
+                method: 'POST',
+                credentials: 'include', // 요청에 쿠키 포함
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (logoutResponse.ok) {
+                localStorage.removeItem("accessToken");
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login.html'; // 리프레시 토큰이 만료되었을 때 로그인 페이지로 리다이렉트
+            }
+        } else if (response.status === 403) {
+            alert('접근 권한이 없습니다. 로그인이 필요합니다.');
+            window.location.href = '/login.html'; // 권한이 없을 때 로그인 페이지로 리다이렉트
         }
 
         // 응답에서 Authorization 헤더가 존재할 때만 처리
@@ -88,6 +102,8 @@ async function sendRequestWithToken(url, method) {
         throw error;
     }
 }
+
+
 
 
 // 전역에서 사용 가능하도록 함수 내보내기
