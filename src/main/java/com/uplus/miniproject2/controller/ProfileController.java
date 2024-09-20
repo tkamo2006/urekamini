@@ -1,10 +1,12 @@
 package com.uplus.miniproject2.controller;
 
+import com.uplus.miniproject2.dto.ProfileExistDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
 import com.uplus.miniproject2.entity.user.CustomUserDetails;
 import com.uplus.miniproject2.service.ProfileService;
 import com.uplus.miniproject2.util.ApiUtil;
+import com.uplus.miniproject2.util.ApiUtil.ApiSuccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -73,6 +75,14 @@ public class ProfileController {
             @RequestParam(defaultValue = "10") int size) {
         Page<ProfileRequestDto> profileRequests = profileService.getProfileRequests(page, size);
         return ApiUtil.success(profileRequests);
+    }
+
+    @GetMapping("/check")
+    public ApiSuccess<?> checkHasProfile(@AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long loginUserId = loginUser.getId();
+        ProfileExistDto profileExistDto = profileService.getProfile(loginUserId);
+
+        return ApiUtil.success(profileExistDto);
     }
 
 }

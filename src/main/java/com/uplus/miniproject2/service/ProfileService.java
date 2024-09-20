@@ -2,15 +2,18 @@ package com.uplus.miniproject2.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uplus.miniproject2.dto.ProfileExistDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
 import com.uplus.miniproject2.entity.hobby.Hobby;
 import com.uplus.miniproject2.dto.ProfileRequestDto;
 import com.uplus.miniproject2.entity.proflie.*;
+import com.uplus.miniproject2.entity.user.CustomUserDetails;
 import com.uplus.miniproject2.entity.user.Role;
 import com.uplus.miniproject2.entity.user.User;
 import com.uplus.miniproject2.repository.CustomUserRepository;
 import com.uplus.miniproject2.repository.HobbyRepository;
+import com.uplus.miniproject2.repository.ProfileRepository;
 import com.uplus.miniproject2.repository.ProfileRequestRepository;
 import com.uplus.miniproject2.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final ProfileRequestRepository profileRequestRepository;
+    private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final HobbyRepository hobbyRepository;
 
@@ -159,5 +163,19 @@ public class ProfileService {
                 profileRequest.getRequestType().name(), // RequestType as String
                 profileRequest.getRequestStatus().name() // RequestStatus as String
         ));
+    }
+
+    public ProfileExistDto getProfile(Long loginUserId) {
+        Profile loginUserProfile = profileRepository.findByUserId(loginUserId);
+
+        ProfileExistDto profileExistDto = new ProfileExistDto();
+
+        if (loginUserProfile == null) {
+            profileExistDto.setExist(false);
+        } else {
+            profileExistDto.setExist(true);
+        }
+
+        return profileExistDto;
     }
 }

@@ -266,8 +266,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                         <button type="submit" class="btn btn-primary">저장</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     </div>
                 </form>
             </div>
@@ -495,59 +495,79 @@
     }
 
     function openUserModal(userId) {
-        fetch(`/api/users/${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                const user = data.response;
-                document.getElementById('modalProfileImage').src = `data:image/png;base64,${user.profileImage}`;
-                document.getElementById('modalUserName').innerText = user.name;
-                const gender = user.gender === 'male' ? '남성' : '여성';
-                document.getElementById('modalUserGender').innerText = gender;
-                document.getElementById('modalUserMbti').innerText = user.mbti;
-                document.getElementById('modalUserRegion').innerText = user.region;
-                document.getElementById('modalUserMajor').innerText = user.major;
+    fetch(`/api/users/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const user = data.response;
 
-                const hobbiesList = document.getElementById('modalUserHobbies');
-                hobbiesList.innerHTML = '';  // 기존 취미 초기화
-                user.hobbies.forEach(hobby => {
-                    hobbiesList.innerHTML += `<span class="badge bg-pink text-white me-2" style="font-size: 1.025rem; padding: 10px 15px;">${hobby.name}</span>`;
-                });
+            // 프로필 이미지, 이름, 성별 등 모달에 정보 채우기
+            document.getElementById('modalProfileImage').src = `data:image/png;base64,${user.profileImage}`;
+            document.getElementById('modalUserName').innerText = user.name;
+            const gender = user.gender === 'male' ? '남성' : '여성';
+            document.getElementById('modalUserGender').innerText = gender;
+            document.getElementById('modalUserMbti').innerText = user.mbti;
+            document.getElementById('modalUserRegion').innerText = user.region;
+            document.getElementById('modalUserMajor').innerText = user.major;
 
-                document.getElementById('modalUserExperience').innerText = user.niceExperience;
-                document.getElementById('modalUserPlan').innerText = user.plan;
-
-                // Update the link to pass the userId
-                const familiarityBtn = document.getElementById('familiarityBtn');
-                familiarityBtn.href = `/familiarity.html?userId=${userId}`;
-
-
-                // Familiarity 버튼 클릭 시 권한 검사 추가
-                familiarityBtn.removeEventListener('click', handleFamiliarityClick); // 기존 리스너 제거
-                familiarityBtn.addEventListener('click', handleFamiliarityClick);
-
-                function handleFamiliarityClick(event) {
-                    event.preventDefault(); // 기본 동작 중단
-
-                    // 권한 확인 API 호출
-                    sendRequestWithToken(familiarityBtn.href, 'GET')
-                        .then(response => {
-                            if (response.status === 200) {
-                                window.location.href = familiarityBtn.href; // 권한이 있는 경우 페이지 이동
-                            }
-                        })
-                        .catch(error => {
-                            if (error.message === 'No access token available') {
-                                alert('로그인이 필요합니다.');
-                                window.location.href = '/login.html';
-                            } else {
-                                console.error('Error:', error);
-                            }
-                        });
-                }
-                const userModal = new bootstrap.Modal(document.getElementById('userModal'));
-                userModal.show();
+            // 취미 목록을 모달에 채우기
+            const hobbiesList = document.getElementById('modalUserHobbies');
+            hobbiesList.innerHTML = '';  // 기존 취미 초기화
+            user.hobbies.forEach(hobby => {
+                hobbiesList.innerHTML += `<span class="badge bg-pink text-white me-2" style="font-size: 1.025rem; padding: 10px 15px;">${hobby.name}</span>`;
             });
+
+            document.getElementById('modalUserExperience').innerText = user.niceExperience;
+            document.getElementById('modalUserPlan').innerText = user.plan;
+
+            // 모달을 띄우기 전에 Bootstrap Modal 객체 생성 및 표시
+            const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            userModal.show();
+
+            // 친밀도 버튼에 유저 ID 추가 및 이벤트 리스너 등록
+            const familiarityBtn = document.getElementById('familiarityBtn');
+            familiarityBtn.href = `/familiarity.html?userId=${userId}`;
+
+            familiarityBtn.removeEventListener('click', handleFamiliarityClick); // 기존 리스너 제거
+            familiarityBtn.addEventListener('click', handleFamiliarityClick);
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+}
+
+// 친밀도 버튼 클릭 시 권한 및 프로필 유무 확인
+function handleFamiliarityClick(event) {
+    event.preventDefault(); // 기본 동작 중단
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        window.location.href = '/login.html';
+        return;
     }
+
+    const familiarityUrl = event.currentTarget.getAttribute('href');
+
+    fetch('/api/profiles/check', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.response.exist) {
+            window.location.href = familiarityUrl;
+        } else {
+            alert('프로필 등록이 필요합니다.');
+        }
+    })
+    .catch(error => {
+        console.error('Error checking profile:', error);
+    });
+}
+
 
     function renderPagination(pageData) {
         const pagination = document.getElementById('pagination');
