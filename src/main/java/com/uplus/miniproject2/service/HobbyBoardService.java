@@ -29,7 +29,7 @@ public class HobbyBoardService {
 
     public Page<HobbyBoardDto> getPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<HobbyBoard> boardPage = hobbyBoardRepository.findAll(pageable);
+        Page<HobbyBoard> boardPage = hobbyBoardRepository.findAllWithUserAndProfile(pageable);
 
         List<HobbyBoardDto> boardDtos = boardPage.getContent().stream()
                 .map(hobbyBoard -> new HobbyBoardDto(

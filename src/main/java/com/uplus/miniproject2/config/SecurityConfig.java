@@ -55,7 +55,8 @@ public class SecurityConfig {
                         "/api/users/**",
                         "/css/**", "/js/**", "/img/**"
                 ).permitAll()// 누구나 접근 가능
-                .requestMatchers("/api/posts/**", "/api/map/**", "/api/statistics/**", "/api/profiles/**")
+                .requestMatchers("/api/posts/**", "/api/map/**", "/api/statistics/**", "/api/profiles/**",
+                        "/api/familiarity/**")
                 .hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
                 .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
