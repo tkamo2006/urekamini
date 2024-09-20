@@ -9,12 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, Long> {
 
     List<ProfileRequest> findAllByRequestStatus(RequestStatus requestStatus);
 
-    List<ProfileRequest> findByUserId(Long userId);
+    Optional<ProfileRequest> findByUserId(Long userId);
 
     Page<ProfileRequest> findAll(Pageable pageable);
 }

@@ -38,7 +38,15 @@ public class ProfileRequest {
         this.requestStatus = requestStatus;
     }
 
-    // 명확한 비즈니스 목적을 가진 메서드
+    public void updateProfileRequest(ProfileRequest newProfileRequest) {
+        this.user = newProfileRequest.user;
+        this.profile = newProfileRequest.profile;
+        this.requestType = newProfileRequest.requestType;
+        this.requestStatus = newProfileRequest.requestStatus;
+    }
+  
+  
+      // 명확한 비즈니스 목적을 가진 메서드
     public void changeRequestStatus(RequestStatus status) {
         // 이메일 변경에 대한 추가 비즈니스 로직을 여기에 포함할 수 있음
         if (isValidRequestStatus(status)) {
@@ -52,6 +60,8 @@ public class ProfileRequest {
         // 주어진 status가 RequestStatus Enum의 값 중 하나인지 확인
         return status != null && Arrays.asList(RequestStatus.values()).contains(status);
     }
+  
+  
 
 }
 

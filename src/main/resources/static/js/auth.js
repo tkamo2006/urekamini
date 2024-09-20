@@ -92,7 +92,7 @@ async function sendRequestWithToken(url, method, headers, body) {
                 window.location.href = '/login.html'; // 리프레시 토큰이 만료되었을 때 로그인 페이지로 리다이렉트
             }
         } else if (response.status === 403) {
-            alert('접근 권한이 없습니다. 로그인이 필요합니다.');
+            alert('로그인이 필요합니다.');
             window.location.href = '/login.html'; // 권한이 없을 때 로그인 페이지로 리다이렉트
         }
 
