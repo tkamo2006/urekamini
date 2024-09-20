@@ -11,10 +11,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, Long> {
+
     List<ProfileRequest> findAllByRequestStatus(RequestStatus requestStatus);
 
     List<ProfileRequest> findByUserId(Long userId);
 
     Page<ProfileRequest> findAll(Pageable pageable);
-
 }
