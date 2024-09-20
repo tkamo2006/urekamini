@@ -8,14 +8,8 @@ import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
 import com.uplus.miniproject2.entity.hobby.Hobby;
 import com.uplus.miniproject2.dto.ProfileRequestDto;
 import com.uplus.miniproject2.entity.proflie.*;
-import com.uplus.miniproject2.entity.user.CustomUserDetails;
-import com.uplus.miniproject2.entity.user.Role;
 import com.uplus.miniproject2.entity.user.User;
-import com.uplus.miniproject2.repository.CustomUserRepository;
-import com.uplus.miniproject2.repository.HobbyRepository;
-import com.uplus.miniproject2.repository.ProfileRepository;
-import com.uplus.miniproject2.repository.ProfileRequestRepository;
-import com.uplus.miniproject2.repository.UserRepository;
+import com.uplus.miniproject2.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
