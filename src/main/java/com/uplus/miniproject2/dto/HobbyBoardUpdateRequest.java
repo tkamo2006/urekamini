@@ -8,4 +8,6 @@ import lombok.Data;
 public class HobbyBoardUpdateRequest {
     private String title;
     private String description;
+    private String videoLink;
+    private String hobbyCategory;
 }

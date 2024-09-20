@@ -26,12 +26,14 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final ProfileRequestRepository profileRequestRepository;
-    private final CustomUserRepository userRepository;
+    private final UserRepository userRepository;
     private final HobbyRepository hobbyRepository;
 
     public ProfilePageProfileRequestDto createProfileRequest(Long userId,
                                                              ProfilePageProfileResponseDto profileResponseDto) {
-        User user = userRepository.findById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException());
+        System.out.println(userId);
         RequestType requestType;
         Profile profile;
         Region region;
@@ -97,36 +99,37 @@ public class ProfileService {
         );
     }
 
-    public List<ProfilePageProfileRequestDto> getProfileRequests(Long adminId) {
-        User admin = userRepository.findById(adminId);
-        if (admin.getRole() != Role.ADMIN) {
-            System.out.println();
-            throw new IllegalStateException("접근 권한 없음");
-        }
-        List<ProfileRequest> profileRequests = profileRequestRepository.findAllByRequestStatus(RequestStatus.PENDING);
-
-        for (ProfileRequest request : profileRequests) {
-            System.out.println(request);
-        }
-
-        // DTO로 변환
-        List<ProfilePageProfileRequestDto> profileRequestDTOs = profileRequests.stream()
-                .map(request -> new ProfilePageProfileRequestDto(
-                        request.getProfile().getMajor(),
-                        request.getProfile().getMbti().name(),
-                        request.getProfile().getRegion().getName(),
-                        request.getProfile().getPlan(),
-                        request.getProfile().getNiceExperience(),
-                        request.getProfile().getImage(),
-                        request.getProfile().getHobbies(),
-                        request.getRequestType(),
-                        request.getRequestStatus()
-                ))
-                .collect(Collectors.toList());
-
-        return profileRequestDTOs;
-
-    }
+    // 유저 Profile_Request 요청 조회
+//    public List<ProfilePageProfileRequestDto> getProfileRequests(Long adminId) {
+//        User admin = userRepository.findById(adminId);
+//        if (admin.getRole() != Role.ADMIN) {
+//            System.out.println();
+//            throw new IllegalStateException("접근 권한 없음");
+//        }
+//        List<ProfileRequest> profileRequests = profileRequestRepository.findAllByRequestStatus(RequestStatus.PENDING);
+//
+//        for (ProfileRequest request : profileRequests) {
+//            System.out.println(request);
+//        }
+//
+//        // DTO로 변환
+//        List<ProfilePageProfileRequestDto> profileRequestDTOs = profileRequests.stream()
+//                .map(request -> new ProfilePageProfileRequestDto(
+//                        request.getProfile().getMajor(),
+//                        request.getProfile().getMbti().name(),
+//                        request.getProfile().getRegion().getName(),
+//                        request.getProfile().getPlan(),
+//                        request.getProfile().getNiceExperience(),
+//                        request.getProfile().getImage(),
+//                        request.getProfile().getHobbies(),
+//                        request.getRequestType(),
+//                        request.getRequestStatus()
+//                ))
+//                .collect(Collectors.toList());
+//
+//        return profileRequestDTOs;
+//
+//    }
 
     public List<String> parseJsonArray(String jsonArray) {
         try {

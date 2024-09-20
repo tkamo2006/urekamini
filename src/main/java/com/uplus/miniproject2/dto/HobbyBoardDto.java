@@ -12,7 +12,7 @@ import java.util.List;
 public class HobbyBoardDto {
     private Long id;
     private String name;
-    private String username;
+    private Long userId;
     private String title;
     private String description;
     private String videoLink;

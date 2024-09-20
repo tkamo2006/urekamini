@@ -4,10 +4,12 @@ import com.uplus.miniproject2.dto.HobbyBoardDto;
 import com.uplus.miniproject2.dto.HobbyBoardRequest;
 import com.uplus.miniproject2.dto.HobbyBoardUpdateRequest;
 import com.uplus.miniproject2.entity.hobby.HobbyBoard;
+import com.uplus.miniproject2.entity.user.CustomUserDetails;
 import com.uplus.miniproject2.service.HobbyBoardService;
 import com.uplus.miniproject2.util.ApiUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,10 +42,9 @@ public class BoardController {
 
     // 게시물 저장
     @PostMapping
-//    public ApiUtil.ApiSuccess<?> savePost(@RequestBody HobbyBoardRequest hobbyBoardRequest, @RequestParam Long userId) {
-    public ApiUtil.ApiSuccess<?> savePost(@RequestBody HobbyBoardRequest hobbyBoardRequest) {
-//        return ApiUtil.success(hobbyBoardService.savePost(userId, hobbyBoardRequest));
-        return ApiUtil.success(hobbyBoardService.savePost(10L, hobbyBoardRequest));
+    public ApiUtil.ApiSuccess<?> savePost(@RequestBody HobbyBoardRequest hobbyBoardRequest, @AuthenticationPrincipal CustomUserDetails loginUser) {
+        Long loginUserId = loginUser.getId();
+        return ApiUtil.success(hobbyBoardService.savePost(loginUserId, hobbyBoardRequest));
     }
 
     // 게시물 수정

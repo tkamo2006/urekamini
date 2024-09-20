@@ -44,8 +44,10 @@ public class HobbyBoard {
         this.thumbsUp = thumbsUp;
     }
 
-    public void updateBoard(String title, String description) {
+    public void updateBoard(String title, String description, String hobbyCategory, String videoLink) {
         this.title = title;
         this.description = description;
+        this.hobbyCategory = HobbyCategory.valueOf(hobbyCategory);
+        this.videoLink = videoLink;
     }
 }

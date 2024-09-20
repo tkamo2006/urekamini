@@ -179,9 +179,16 @@
         const hobbyCategory = document.getElementById('postCategory').value;
         const videoLink = document.getElementById('postVideoLink').value;
 
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+            return;
+        }
+
         fetch('/api/posts', {
             method: 'POST',
             headers: {
+                'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ title, description, hobbyCategory, videoLink })

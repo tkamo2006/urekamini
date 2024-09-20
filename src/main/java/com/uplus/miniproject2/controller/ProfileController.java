@@ -2,9 +2,11 @@ package com.uplus.miniproject2.controller;
 
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
+import com.uplus.miniproject2.entity.user.CustomUserDetails;
 import com.uplus.miniproject2.service.ProfileService;
 import com.uplus.miniproject2.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +22,7 @@ public class ProfileController {
 
     @PostMapping
     public ApiUtil.ApiSuccess<?> createProfileRequest(
-//            @RequestParam("userId") Long userId,
+            @AuthenticationPrincipal CustomUserDetails loginUser,
             @RequestParam("mbti") String mbti,
             @RequestParam("major") String major,
             @RequestParam("region") String region,
@@ -31,21 +33,24 @@ public class ProfileController {
     ) throws IOException {
 
 
+        Long userId = loginUser.getId();
+
+        System.out.println("userId : "+userId);
 
         List<String> subHobbies = profileService.parseJsonArray(subHobbiesJson);
         byte[] imageBytes = profileImage != null ? profileImage.getBytes() : Objects.requireNonNull(getClass().getResourceAsStream("/static/img/img.png")).readAllBytes();
 
         ProfilePageProfileResponseDto profileResponseDto
                 = new ProfilePageProfileResponseDto(major, mbti, region, plan, niceExperience,imageBytes, subHobbies);
-//        ProfilePageProfileRequestDto profileRequest = profileService.createProfileRequest(userId, profileResponseDto);
-        ProfilePageProfileRequestDto profileRequest = profileService.createProfileRequest(10L, profileResponseDto);
+        ProfilePageProfileRequestDto profileRequest = profileService.createProfileRequest(userId, profileResponseDto);
         return ApiUtil.success(profileRequest);
     }
 
-    @GetMapping
-    public ApiUtil.ApiSuccess<?> getProfileRequests(@RequestParam("adminId") Long adminId) {
-        List<ProfilePageProfileRequestDto> requests = profileService.getProfileRequests(adminId);
-
-        return ApiUtil.success(requests);
-    }
+    // 유저 Profile_Request 요청 조회
+//    @GetMapping
+//    public ApiUtil.ApiSuccess<?> getProfileRequests(@RequestParam("adminId") Long adminId) {
+//        List<ProfilePageProfileRequestDto> requests = profileService.getProfileRequests(adminId);
+//
+//        return ApiUtil.success(requests);
+//    }
 }

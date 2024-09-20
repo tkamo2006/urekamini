@@ -7,6 +7,7 @@ import com.uplus.miniproject2.entity.hobby.HobbyBoard;
 import com.uplus.miniproject2.entity.user.User;
 import com.uplus.miniproject2.repository.CustomUserRepository;
 import com.uplus.miniproject2.repository.HobbyBoardRepository;
+import com.uplus.miniproject2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class HobbyBoardService {
 
     private final HobbyBoardRepository hobbyBoardRepository;
-    private final CustomUserRepository customUserRepository;
+    private final UserRepository userRepository;
 
     public Page<HobbyBoardDto> getPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -34,7 +35,7 @@ public class HobbyBoardService {
                 .map(hobbyBoard -> new HobbyBoardDto(
                         hobbyBoard.getId(),
                         hobbyBoard.getUser().getName(),
-                        hobbyBoard.getUser().getUsername(),
+                        hobbyBoard.getUser().getId(),
                         hobbyBoard.getTitle(),
                         hobbyBoard.getDescription(),
                         hobbyBoard.getVideoLink(),
@@ -52,7 +53,7 @@ public class HobbyBoardService {
         HobbyBoardDto boardDto = new HobbyBoardDto(
                 hobbyBoard.getId(),
                 hobbyBoard.getUser().getName(),
-                hobbyBoard.getUser().getUsername(),
+                hobbyBoard.getUser().getId(),
                 hobbyBoard.getTitle(),
                 hobbyBoard.getDescription(),
                 hobbyBoard.getVideoLink(),
@@ -64,7 +65,8 @@ public class HobbyBoardService {
 
     public boolean savePost(Long userId, HobbyBoardRequest hobbyBoardRequest) {
         try {
-            User user = customUserRepository.findById(userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException());
             HobbyBoard hobbyBoard = new HobbyBoard(
                     user,
                     hobbyBoardRequest.getTitle(),
@@ -103,7 +105,12 @@ public class HobbyBoardService {
         try {
             HobbyBoard hobbyBoard = hobbyBoardRepository.findById(postId)
                     .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-            hobbyBoard.updateBoard(hobbyBoardRequest.getTitle(), hobbyBoardRequest.getDescription());
+            hobbyBoard.updateBoard(
+                    hobbyBoardRequest.getTitle(),
+                    hobbyBoardRequest.getDescription(),
+                    hobbyBoardRequest.getHobbyCategory(),
+                    hobbyBoardRequest.getVideoLink()
+                    );
             return true;
         } catch (Exception e) {
             e.printStackTrace();
