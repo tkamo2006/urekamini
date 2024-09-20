@@ -39,7 +39,7 @@ public class HobbyBoardService {
                         hobbyBoard.getTitle(),
                         hobbyBoard.getDescription(),
                         hobbyBoard.getVideoLink(),
-                        hobbyBoard.getHobbyCategory().getName(),
+                        hobbyBoard.getHobbyCategory(),
                         hobbyBoard.getThumbsUp()
 
                 ))
@@ -57,7 +57,7 @@ public class HobbyBoardService {
                 hobbyBoard.getTitle(),
                 hobbyBoard.getDescription(),
                 hobbyBoard.getVideoLink(),
-                hobbyBoard.getHobbyCategory().getName(),
+                hobbyBoard.getHobbyCategory(),
                 hobbyBoard.getThumbsUp()
         );
         return boardDto;

@@ -16,6 +16,6 @@ public class HobbyBoardDto {
     private String title;
     private String description;
     private String videoLink;
-    private String hobbyCategory;
+    private HobbyCategory hobbyCategory;
     private int thumbsUp;
 }
