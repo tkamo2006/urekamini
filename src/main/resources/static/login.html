@@ -30,6 +30,7 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         /* 로그인 폼 스타일 */
@@ -43,7 +44,6 @@
             margin-bottom: 1rem;
             font-size: 24px;
             color: #333;
-            text-align: center;
         }
 
         /* 폼 레이블과 입력 필드 스타일 */
@@ -92,10 +92,19 @@
         .signup-link a:hover {
             text-decoration: underline;
         }
+
+        /* 이미지 스타일 */
+        .login-logo {
+            max-width: 100px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
 <div class="login-container">
+    <img src="https://pbs.twimg.com/profile_images/1443536012/__1_400x400.png" alt="Home" class="login-logo" onclick="window.location.href='/'" />
+
     <form class="login-form" id="loginForm">
         <h1>로그인</h1>
         <label for="username">사용자 이름:</label>
@@ -153,3 +162,4 @@
 </script>
 </body>
 </html>
+
