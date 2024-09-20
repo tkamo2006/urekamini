@@ -54,15 +54,25 @@ function saveAccessToken(token) {
 }
 
 // 액세스 토큰을 사용해 요청을 보내는 함수
-async function sendRequestWithToken(url, method) {
+async function sendRequestWithToken(url, method, headers, body) {
     const token = getAccessToken();  // getAccessToken() 함수에서 토큰 가져오기
-
+    if (!headers) {
+        // headers가 없으면 새 Headers 객체를 생성
+        headers = new Headers({
+            'Authorization': `Bearer ${token}`,
+        });
+    } else if (typeof headers.append === 'function') {
+        // headers가 Headers 객체인 경우
+        headers.append('Authorization', `Bearer ${token}`);
+    } else {
+        // headers가 일반 객체인 경우
+        headers['Authorization'] = `Bearer ${token}`;
+    }
     try {
         let response = await fetch(url, {
             method: method,
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            }
+            headers: headers,
+            body:body
         });
         console.log(response.status);
 
