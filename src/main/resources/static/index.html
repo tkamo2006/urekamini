@@ -304,45 +304,62 @@
         'ETC': ['강아지', '고양이', '깃허브 구경', '드라이브', '필름 사진', '귀여운거 보기', '글 쓰기', '밸런스 게임 만들기', '알고리즘 문제 풀기', '트레이딩', '잡담하기']
     };
 
+    // 선택된 세부 취미를 저장할 객체
+let selectedSubHobbies = {};
 
-    // 취미 체크박스에 이벤트 리스너 추가
-    document.querySelectorAll('.hobby-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            toggleSubHobbies(); // 체크박스의 value에 맞는 세부 취미를 토글
-        });
+// 취미 체크박스에 이벤트 리스너 추가
+document.querySelectorAll('.hobby-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        toggleSubHobbies(); // 체크박스의 value에 맞는 세부 취미를 토글
     });
+});
 
-    // 선택된 취미에 맞는 세부 취미 토글
-    function toggleSubHobbies() {
-        const subHobbyDiv = document.getElementById('subHobbiesContainer');
-        const subHobbyOptions = document.getElementById('subHobbies');
+// 선택된 취미에 맞는 세부 취미 토글
+function toggleSubHobbies() {
+    const subHobbyDiv = document.getElementById('subHobbiesContainer');
+    const subHobbyOptions = document.getElementById('subHobbies');
 
-        // 기존의 세부 취미 초기화
-        subHobbyOptions.innerHTML = '';
+    // 기존의 세부 취미 초기화
+    subHobbyOptions.innerHTML = '';
 
-        const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
-            .map(checkbox => checkbox.value);
+    const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
+        .map(checkbox => checkbox.value);
 
-        if (selectedHobbies.length > 0) {
-            subHobbyDiv.style.display = 'block'; // 세부 취미 보이기
+    if (selectedHobbies.length > 0) {
+        subHobbyDiv.style.display = 'block'; // 세부 취미 보이기
 
-            selectedHobbies.forEach(hobby => {
-                if (hobbyDetails[hobby]) {
-                    hobbyDetails[hobby].forEach(subHobby => {
-                        const option = document.createElement('div');
-                        option.className = 'form-check me-3';
-                        option.innerHTML = `
-                            <input class="form-check-input" type="checkbox" value="${subHobby}" id="subHobby_${subHobby}" ${isSubHobbyChecked(subHobby) ? 'checked' : ''}>
-                            <label class="form-check-label" for="subHobby_${subHobby}">${subHobby}</label>
-                        `;
-                        subHobbyOptions.appendChild(option);
+        selectedHobbies.forEach(hobby => {
+            if (hobbyDetails[hobby]) {
+                hobbyDetails[hobby].forEach(subHobby => {
+                    const isChecked = selectedSubHobbies[hobby] && selectedSubHobbies[hobby].includes(subHobby); // 선택 상태 확인
+                    const option = document.createElement('div');
+                    option.className = 'form-check me-3';
+                    option.innerHTML = `
+                        <input class="form-check-input" type="checkbox" value="${subHobby}" id="subHobby_${subHobby}" ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label" for="subHobby_${subHobby}">${subHobby}</label>
+                    `;
+                    subHobbyOptions.appendChild(option);
+
+                    // 세부 취미 선택 이벤트 리스너 추가
+                    option.querySelector('input').addEventListener('change', function () {
+                        if (this.checked) {
+                            if (!selectedSubHobbies[hobby]) {
+                                selectedSubHobbies[hobby] = [];
+                            }
+                            selectedSubHobbies[hobby].push(subHobby); // 선택된 세부 취미 추가
+                        } else {
+                            // 선택 해제 시 제거
+                            selectedSubHobbies[hobby] = selectedSubHobbies[hobby].filter(item => item !== subHobby);
+                        }
                     });
-                }
-            });
-        } else {
-            subHobbyDiv.style.display = 'none'; // 세부 취미 숨기기
-        }
+                });
+            }
+        });
+    } else {
+        subHobbyDiv.style.display = 'none'; // 세부 취미 숨기기
     }
+}
+
 
 
     // 현재 선택된 세부 취미 체크 여부 확인
@@ -355,6 +372,7 @@
 
     // 프로필 저장 로직 (POST)
     document.getElementById('profileForm').addEventListener('submit', function (e) {
+        e.preventDefault();
         const hobbies = document.querySelectorAll('.hobby-checkbox:checked');
         const hobbyError = document.getElementById('hobbyError');
         const subHobbies = document.querySelectorAll('#subHobbies input:checked');
@@ -417,6 +435,9 @@
                 alert('프로필이 저장 요청이 완료되었습니다.');
                 // 필요한 경우 페이지를 리로드하거나 UI를 업데이트
                 location.reload();
+            })
+            .catch(error => {
+                console.error('프로필 저장 중 오류 발생', error);
             });
     });
 
