@@ -1,5 +1,6 @@
 package com.uplus.miniproject2.jwt;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,16 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
+        // 만료 날자가 현재 날자보다 이전인지 확인
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        }catch (JwtException e) {
+            // JWT 파싱 중 예외가 발생하면 만료로 처리합니다.
+            return true;
+        }
+
+
     }
 
     public String createJwt(Long id, String username, String role, Long expiredMs) {

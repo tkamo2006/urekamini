@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
 import com.uplus.miniproject2.entity.hobby.Hobby;
+import com.uplus.miniproject2.dto.ProfileRequestDto;
 import com.uplus.miniproject2.entity.proflie.*;
 import com.uplus.miniproject2.entity.user.Role;
 import com.uplus.miniproject2.entity.user.User;
-import com.uplus.miniproject2.repository.*;
+import com.uplus.miniproject2.repository.CustomUserRepository;
+import com.uplus.miniproject2.repository.ProfileRequestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -139,5 +144,18 @@ public class ProfileService {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    public Page<ProfileRequestDto> getProfileRequests(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProfileRequest> profileRequests = profileRequestRepository.findAll(pageable);
+
+        return profileRequests.map(profileRequest -> new ProfileRequestDto(
+                profileRequest.getId(),
+                profileRequest.getUser().getId(), // User ID
+                profileRequest.getProfile().getId(), // Profile ID
+                profileRequest.getRequestType().name(), // RequestType as String
+                profileRequest.getRequestStatus().name() // RequestStatus as String
+        ));
     }
 }

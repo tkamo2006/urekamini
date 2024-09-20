@@ -16,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUsername(String username);
 
+    // 성별 수 카운트
+    long countByGender(String gender);
+
 }
