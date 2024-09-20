@@ -78,6 +78,7 @@ async function sendRequestWithToken(url, method, headers, body) {
 
         // 응답 상태가 401인 경우 리프레시 토큰이 만료되었을 수 있음
         if (response.status === 401) {
+            alert(response.status)
             // 로그아웃 요청
             const logoutResponse = await fetch('/logout', {
                 method: 'POST',

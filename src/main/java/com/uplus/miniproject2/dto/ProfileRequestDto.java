@@ -15,6 +15,8 @@ public class ProfileRequestDto {
 
     private Long user;
 
+    private String username;
+
     private Long profile;
 
     private String requestType;
