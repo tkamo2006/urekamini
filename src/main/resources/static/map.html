@@ -75,7 +75,18 @@
     var infowindows = {};
     var userListContainer = document.getElementById('user-list');
 
-    fetch('/api/map/profiles')
+    const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다.");
+        }
+
+    fetch('/api/map/profiles', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+        })
         .then(response => response.json())
         .then(data => {
             console.log("데이터를 가져왔습니다.", data);
@@ -145,7 +156,13 @@
             console.error('지도를 업데이트하는 중 오류 발생:', error);
         });
     function openUserModal(userId) {
-        fetch(`/api/users/${userId}`)
+        fetch(`/api/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+            })
             .then(response => response.json())
             .then(data => {
                 const user = data.response;

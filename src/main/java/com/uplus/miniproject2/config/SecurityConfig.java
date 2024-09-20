@@ -24,7 +24,8 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -49,19 +50,22 @@ public class SecurityConfig {
                         "/*.html",         // 모든 HTML 파일
                         "/",
                         "/join",
+                        "/api/join/**",
                         "/check",
-                        "/api/**",
+                        "/api/users/**",
                         "/css/**", "/js/**", "/img/**"
-                ).permitAll() // 누구나 접근 가능
+                ).permitAll()// 누구나 접근 가능
+                .requestMatchers("/api/posts/**", "/api/map/**", "/api/statistics/**", "/api/profiles/**")
+                .hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
                 .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
 
         // 로그인 필터 등록
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+                UsernamePasswordAuthenticationFilter.class);
 
         // JWT 필터 등록
         http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
 
         // 세션 관리 설정 (JWT 사용으로 인해 세션 사용 안 함)
         http.sessionManagement((session) -> session
