@@ -56,11 +56,12 @@ public class SecurityConfig {
                 .requestMatchers("/admin").hasRole("ADMIN") // 어드민 권한
                 .anyRequest().authenticated()); // 그 외 모든 요청은 인증 필요
 
+        // 로그인 필터 등록
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         // JWT 필터 등록
         http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        // 로그인 필터 등록
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         // 세션 관리 설정 (JWT 사용으로 인해 세션 사용 안 함)
         http.sessionManagement((session) -> session
