@@ -15,7 +15,7 @@ public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, 
 
     List<ProfileRequest> findAllByRequestStatus(RequestStatus requestStatus);
 
-    List<ProfileRequest> findByUserId(Long userId);
+    Optional<ProfileRequest> findByUserId(Long userId);
 
     Page<ProfileRequest> findAll(Pageable pageable);
 }
