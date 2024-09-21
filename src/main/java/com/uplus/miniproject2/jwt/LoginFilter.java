@@ -48,14 +48,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
         Long id = customUserDetails.getId();
-        String accessToken = jwtUtil.createJwt(id, username, role, 60*60*100L); // 1 hour
-        String refreshToken = jwtUtil.createJwt(id, username, role, 24*60*60*100L); // 1 day
+        String accessToken = jwtUtil.createJwt(id, username, role, 60*60*10*100L); // 1 hour
+        String refreshToken = jwtUtil.createJwt(id, username, role, 24*60*60*1000L); // 24 hour
 
 
         // Set Refresh Token in HttpOnly cookie
         // 리프레시 토큰이 HttpOnly, Secure 속성으로 쿠키에 저장되어 있을 때, 브라우저는 이를 서버로 자동으로 전송
         // Cookie 객체를 생성
         Cookie cookie = new Cookie("Refresh-Token", refreshToken);
+        cookie.setMaxAge(24 * 60 * 60); // 1일 (초 단위)
         cookie.setHttpOnly(true); // JavaScript에서 접근할 수 없게
         cookie.setSecure(true); // Secure 속성이 true로 설정된 쿠키는 HTTPS 프로토콜을 사용하는 경우에만 전송
         cookie.setPath("/"); // 쿠키의 유효 경로를 설정, /로 설정하면 쿠키는 웹 애플리케이션의 모든 경로에서 접근할 수 있다.

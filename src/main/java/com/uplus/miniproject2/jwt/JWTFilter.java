@@ -52,11 +52,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 // 리프레시 토큰에서 사용자 정보 추출
                 String username = jwtUtil.getUsername(refreshToken);
-                String role = jwtUtil.getRole(refreshToken).split("_")[1];
+                String role = jwtUtil.getRole(refreshToken);
                 Long id = jwtUtil.getId(refreshToken);
 
                 // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 100L);
+                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 10 *100L);
                 logger.info("New access token: " + newAccessToken);
 
                 // 응답 헤더에 새 액세스 토큰 추가
