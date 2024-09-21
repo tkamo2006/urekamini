@@ -122,26 +122,17 @@
     });
 
     function fetchPosts(page, size) {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            console.error("토큰이 없습니다.");
-            return;
-        }
+        const url = `/api/posts?page=${page}&size=${size}`;
+        const method = 'GET'
 
-        fetch(`/api/posts?page=${page}&size=${size}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                }
-            })
+        sendRequestWithToken(url, method, null, null)
             .then(response => response.json())
             .then(data => {
                 renderPostTable(data.response.content, page);
                 currentPage = data.response.number;
                 totalPages = data.response.totalPages;
                 renderPagination(); // 페이지네이션 버튼을 새로 고침
-            });
+        });
     }
 
     function renderPostTable(posts, page) {
@@ -191,20 +182,14 @@
         const hobbyCategory = document.getElementById('postCategory').value;
         const videoLink = document.getElementById('postVideoLink').value;
 
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            console.error("토큰이 없습니다.");
-            return;
-        }
+        const url = '/api/posts';
+        const method = 'POST';
+        const body = JSON.stringify({ title, description, hobbyCategory, videoLink });
+        const headers = new Headers({
+            'Content-Type': 'application/json'
+        });
 
-        fetch('/api/posts', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title, description, hobbyCategory, videoLink })
-        })
+        sendRequestWithToken(url, method, headers, body)
             .then(response => response.json())
             .then(data => {
                 alert('글이 저장되었습니다.');

@@ -64,7 +64,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 // 응답을 작성하고 필터 체인 종료
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().flush();
+//                response.getWriter().flush();
+
+                saveAuthentication(newAccessToken);
+
+                filterChain.doFilter(request, response);
                 return;
             } else {
                 // 리프레시 토큰이 없거나 만료된 경우 오류 응답 반환
@@ -73,9 +77,23 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
+        saveAuthentication(token);
+
+        // 다음 필터로 처리 넘김
+        filterChain.doFilter(request, response);
+    }
+
+    private void saveAuthentication(String token) {
         // 액세스 토큰이 유효한 경우 사용자 정보 추출 및 인증 설정
         String username = jwtUtil.getUsername(token);
-        String role = jwtUtil.getRole(token).split("_")[1];
+        String extractRole = jwtUtil.getRole(token);
+        String role = "";
+        if (extractRole.contains("_")) {
+            role = extractRole.split("_")[1];
+        } else {
+            role = extractRole;
+        }
+//        String role = jwtUtil.getRole(token).split("_")[1];
         Long userId = jwtUtil.getId(token);
 
         // 사용자 정보로 User 객체 생성
@@ -94,9 +112,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 customUserDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        // 다음 필터로 처리 넘김
-        filterChain.doFilter(request, response);
     }
 
 
