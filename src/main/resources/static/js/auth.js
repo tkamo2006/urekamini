@@ -74,11 +74,8 @@ async function sendRequestWithToken(url, method, headers, body) {
             headers: headers,
             body:body
         });
-        console.log(response.status);
-
         // 응답 상태가 401인 경우 리프레시 토큰이 만료되었을 수 있음
         if (response.status === 401) {
-            alert(response.status)
             // 로그아웃 요청
             const logoutResponse = await fetch('/logout', {
                 method: 'POST',
@@ -88,11 +85,13 @@ async function sendRequestWithToken(url, method, headers, body) {
                 }
             });
             if (logoutResponse.ok) {
+                console.log('401입니다!')
                 localStorage.removeItem("accessToken");
                 alert('로그인이 필요합니다.');
                 window.location.href = '/login.html'; // 리프레시 토큰이 만료되었을 때 로그인 페이지로 리다이렉트
             }
         } else if (response.status === 403) {
+            console.log('403 입니다!')
             alert('로그인이 필요합니다.');
             window.location.href = '/login.html'; // 권한이 없을 때 로그인 페이지로 리다이렉트
         }

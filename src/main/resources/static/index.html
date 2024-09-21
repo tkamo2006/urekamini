@@ -446,7 +446,7 @@ function toggleSubHobbies() {
         const headers = new Headers({
             'Content-Type': 'application/json'
         });
-
+        console.log('모달 로드시 함수')
         sendRequestWithToken(url, method, headers, null)
             .then(response => response.json())
             .then(data => {

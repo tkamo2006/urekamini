@@ -24,19 +24,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
+
             document.querySelectorAll('#sidebar .components li a').forEach(link => {
                 link.addEventListener('click', function (event) {
                     event.preventDefault(); // 기본 동작 중단
                     const targetUrl = this.href;
 
                     // 홈 페이지는 권한 확인 없이 이동
-                    if (targetUrl.endsWith('/')) {
+                    if (targetUrl.endsWith('/') || targetUrl.endsWith('#')){
                         window.location.href = targetUrl;
                         return;
                     }
 
-// API 호출로 권한 확인
-                    sendRequestWithToken(targetUrl, 'GET')
+                    // API 호출로 권한 확인
+                    sendRequestWithToken(targetUrl, 'GET', null, null)
                         .then(response => {
                             if (response.status === 200) {
                                 window.location.href = targetUrl; // 권한이 있는 경우 페이지 이동
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         })
                         .catch(error => {
                             if (error.message === 'No access token available') {
+                                console.log('navbar')
                                 alert('로그인이 필요합니다.');
                                 window.location.href = '/login.html';
                             } else {
