@@ -9,11 +9,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u JOIN FETCH u.profile p JOIN FETCH p.hobbies WHERE u.id = :userId")
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.profile p LEFT JOIN FETCH p.hobbies WHERE u.id = :userId")
     Optional<User> findByIdWithProfileAndHobbies(Long userId);
 
     Boolean existsByUsername(String username);
 
     User findByUsername(String username);
+
+    // 성별 수 카운트
+    long countByGender(String gender);
 
 }

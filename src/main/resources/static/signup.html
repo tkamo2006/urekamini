@@ -93,6 +93,12 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        /* 사용자명 확인 메시지 */
+        .username-check-message {
+            color: red;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -104,24 +110,23 @@
         <input type="text" id="name" name="name" required>
 
         <label for="username">사용자명:</label>
-        <input type="text" id="username" name="username" required>
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="username" name="username" required>
+            <button type="button" id="btnCheckUsername" style="margin-left: 1rem; margin-bottom: 1rem ">중복 확인</button>
+        </div>
+        <div id="username-check-message" class="username-check-message"></div>
 
         <label for="password">비밀번호:</label>
         <input type="password" id="password" name="password" required>
 
-        <label for="role">역할:</label>
-        <select id="role" name="role" required>
-            <option value="">역할 선택</option>
-            <option value="ADMIN">관리자</option>
-            <option value="USER">사용자</option>
-        </select>
+        <label for="password2">비밀번호 확인:</label>
+        <input type="password" id="password2" name="password2" required>
+        <div id="error-message" style="color: red;"></div>
 
         <label for="gender">성별:</label>
         <select id="gender" name="gender" required>
-            <option value="">성별 선택</option>
-            <option value="male">남성</option>
+            <option value="male" selected>남성</option>
             <option value="female">여성</option>
-            <option value="other">기타</option>
         </select>
 
         <button type="button" id="btnSignUp">회원가입</button>
@@ -132,9 +137,102 @@
 </div>
 
 <script>
-    // 페이지 로드 시 실행
+    let isUsernameAvailable = false; // 사용자명 사용 가능 여부
+    let isPasswordAvailable = false; // 비밀번호 일치 여부
+
     window.onload = function() {
-        document.querySelector("#btnSignUp").onclick = signUp;
+        document.querySelector("#btnCheckUsername").onclick = checkUsername;
+        document.querySelector("#username").addEventListener("input", resetUsernameCheck); // 사용자명 변경 시 확인 초기화
+        document.querySelector("#password2").addEventListener("input", checkPasswordMatch);
+        document.querySelector("#btnSignUp").onclick = validateAndSignUp;
+    };
+
+    // 비밀번호 일치 여부를 확인하는 함수
+    function checkPasswordMatch() {
+        let password = document.querySelector("#password").value;
+        let password2 = document.querySelector("#password2").value;
+        let errorMessage = document.querySelector("#error-message");
+
+        if (password !== password2) {
+            errorMessage.textContent = "비밀번호가 일치하지 않습니다."; // 오류 메시지 표시
+            isPasswordAvailable = false;
+        } else {
+            errorMessage.textContent = ""; // 오류 메시지 초기화
+            isPasswordAvailable = true;
+        }
+    }
+
+    // 사용자명 중복 확인 함수
+    async function checkUsername() {
+        let username = document.querySelector("#username").value;
+        let messageElement = document.querySelector("#username-check-message");
+
+        if (username.trim() === "") {
+            messageElement.textContent = "사용자명을 입력하세요.";
+            messageElement.style.color = "red"; // 빨간색
+            return;
+        }
+
+        try {
+            let response = await fetch(`/api/join/usernames/${username}`);
+
+            if (!response.ok) {
+                throw new Error('네트워크 오류');
+            }
+
+            let result = await response.json();
+
+            if (result.response === true) {
+                messageElement.textContent = "이미 존재하는 사용자명입니다.";
+                messageElement.style.color = "red"; // 빨간색
+                isUsernameAvailable = false;
+            } else {
+                messageElement.textContent = "사용 가능한 사용자명입니다.";
+                messageElement.style.color = "green"; // 초록색
+                isUsernameAvailable = true;
+            }
+        } catch (error) {
+            console.error('사용자명 확인 중 오류 발생:', error);
+            messageElement.textContent = "사용자명 확인 중 오류가 발생했습니다.";
+            messageElement.style.color = "red"; // 빨간색
+        }
+    }
+
+
+    // 회원가입 전 비밀번호 확인 및 회원가입 처리 함수
+    async function validateAndSignUp() {
+        let name = document.querySelector("#name").value;
+        let username = document.querySelector("#username").value;
+        let password = document.querySelector("#password").value;
+        let password2 = document.querySelector("#password2").value;
+        let gender = document.querySelector("#gender").value;
+        let errorMessage = document.querySelector("#error-message");
+
+        // 입력 필드 확인
+        if (!name || !username || !password || !password2 || !gender) {
+            alert("입력하지 않은 항목이 있습니다.");
+            return;
+        }
+
+        // 사용자명 중복 확인 여부
+        if (!isUsernameAvailable) {
+            alert("사용자명을 확인하세요.");
+            return;
+        }
+
+        // 비밀번호 일치 여부 확인
+        if (!isPasswordAvailable) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        await signUp();
+    }
+
+    // 사용자명 입력 시 확인 초기화
+    function resetUsernameCheck() {
+        isUsernameAvailable = false; // 사용 가능 여부 초기화
+        document.querySelector("#username-check-message").textContent = ""; // 메시지 초기화
     }
 
     // 회원가입 처리 함수
@@ -142,25 +240,22 @@
         let name = document.querySelector("#name").value;
         let username = document.querySelector("#username").value;
         let password = document.querySelector("#password").value;
-        let role = document.querySelector("#role").value;
         let gender = document.querySelector("#gender").value;
 
-        // JSON 형태로 데이터 구성
         let data = {
             name: name,
             username: username,
             password: password,
-            role: role,
             gender: gender
         };
 
-        let url = "/join";
+        let url = "/api/join";
         let fetchOptions = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json" // JSON 형식으로 Content-Type 설정
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify(data) // JSON 문자열로 변환하여 body에 넣음
+            body: JSON.stringify(data)
         };
 
         try {
@@ -178,6 +273,7 @@
             alert("회원가입 과정에서 오류가 발생했습니다.");
         }
     }
+
 </script>
 </body>
 </html>

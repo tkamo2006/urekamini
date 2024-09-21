@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>프로필 요청 관리</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        html, body {
+            height: 100%; /* 전체 높이 설정 */
+            margin: 0; /* 기본 마진 제거 */
+            margin-left: 100px; /* 자동으로 마진 설정 */
+            display: flex; /* Flexbox 사용 */
+            flex-direction: column; /* 세로 방향으로 배치 */
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 1000px; /* 최대 너비 설정 */
+            flex: 1; /* Flexbox로 공간 차지 */
+            display: flex; /* 내부 요소들을 중앙 정렬 */
+            flex-direction: column; /* 세로 방향으로 배치 */
+            align-items: center; /* 수직 중앙 정렬 */
+            justify-content: flex-start; /* 수직 위쪽 정렬 */
+            padding: 20px;
+            margin-left: auto; /* 자동으로 마진 설정 */
+            margin-right: auto; /* 자동으로 마진 설정 */
+            margin-top: 100px; /* navbar 높이에 따라 조정 */
+            margin-bottom: 20px; /* navbar 높이에 따라 조정 */
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px; /* 제목과 요청 목록 사이의 간격 */
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px; /* 카드 간격 */
+            width: 100%; /* 전체 너비 설정 */
+        }
+
+        .request-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .request-card span {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .btn-custom {
+            height: 35px;
+            padding: 0 25px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-approved {
+            background-color: #ff007f; /* 파란색 */
+            color: white;
+        }
+
+        .btn-rejected {
+            background-color: gray; /* 회색 */
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center; /* 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+            margin-top: 20px; /* 카드와 버튼 간격 */
+            width: 100%; /* 버튼의 너비 설정 */
+            padding-bottom: 70px;
+        }
+
+        .pagination button {
+            margin: 0 15px; /* 버튼 간격 설정 */
+            padding: 10px 20px; /* 버튼 패딩 추가 */
+            font-size: 16px; /* 버튼 글자 크기 조정 */
+        }
+    </style>
+</head>
+<body>
+<header>
+    <!-- Navbar HTML이 동적으로 로드됨 -->
+</header>
+
+<div class="container" id="requestList">
+
+</div>
+<div class="pagination" id="pagination">
+    <button id="prevPage" class="btn btn-primary" disabled>이전</button>
+    <button id="nextPage" class="btn btn-primary">다음</button>
+</div>
+
+<!-- 모달 HTML -->
+<!-- 사용자 정보를 표시할 모달 -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff007f;">
+                <h5 class="modal-title text-white" id="userModalLabel">유저 상세 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img id="modalProfileImage" src="" class="img-fluid rounded" alt="프로필 이미지" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="col-md-8">
+                        <h5 id="modalUserName"></h5>
+                        <p><strong>성별:</strong> <span id="modalUserGender"></span></p>
+                        <p><strong>MBTI:</strong> <span id="modalUserMbti"></span></p>
+                        <p><strong>사는 지역:</strong> <span id="modalUserRegion"></span></p>
+                        <p><strong>전공:</strong> <span id="modalUserMajor"></span></p>
+                        <p><strong>취미:</strong>
+                            <span id="modalUserHobbies" class="d-inline"></span>
+                        </p>
+                        <p><strong>가장 좋았던 경험:</strong> <span id="modalUserExperience"></span></p>
+                        <p><strong>앞으로의 계획:</strong> <span id="modalUserPlan"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/auth.js"></script>
+<script src="/js/navbar.js"></script>
+<script>
+    let currentPage = 0; // 현재 페이지 번호
+    const pageSize = 9; // 페이지당 요청 수
+
+    async function fetchRequests() {
+        try {
+            const response = await sendRequestWithToken(`http://localhost:8080/api/profiles?page=${currentPage}&size=${pageSize}`, 'GET', null, null);
+            const data = await response.json();
+
+            const requestList = document.getElementById('requestList');
+            requestList.innerHTML = '<h1 style="font-weight: bold;">프로필 요청</h1>'; // 제목 초기화
+
+            const board = document.createElement('div');
+            board.className = 'board';
+
+            const pendingRequests = data.response.content.filter(item => item.requestStatus === 'PENDING');
+            const otherRequests = data.response.content.filter(item => item.requestStatus !== 'PENDING');
+
+            pendingRequests.forEach(item => {
+                const requestCard = createRequestCard(item, true);
+                board.appendChild(requestCard);
+            });
+
+            otherRequests.forEach(item => {
+                const requestCard = createRequestCard(item, false);
+                board.appendChild(requestCard);
+            });
+
+            requestList.appendChild(board);
+
+            updatePaginationButtons(data.response.totalPages);
+        } catch (error) {
+            console.error('요청 가져오기 오류:', error);
+        }
+    }
+
+    function createRequestCard(item, isPending) {
+
+        const requestCard = document.createElement('div');
+        requestCard.className = 'request-card';
+        requestCard.innerHTML = `
+        <span>사용자: ${item.userName}</span>
+        <span>요청 타입: ${toTranslateRequestType(item.requestType)}</span>
+        <span>상태: ${toTranslateRequestStatus(item.requestStatus)}</span>
+        <button class="btn btn-light btn-custom  view-details" onclick="openUserModal(${item.userId})">프로필</button>
+        <div>
+            ${isPending ? `
+                <button class="btn btn-custom btn-approved" onclick="updateRequest(${item.profileRequestId}, 'APPROVED')">승인</button>
+                <button class="btn btn-custom btn-rejected" onclick="updateRequest(${item.profileRequestId}, 'REJECTED')">거부</button>
+            ` : `
+                <button class="btn btn-custom ${item.requestStatus === 'REJECTED' ? 'btn-danger' : 'btn-success'}" disabled>
+                    ${item.requestStatus === 'REJECTED' ? '거부' : item.requestStatus === 'APPROVED' ? '완료' : '처리 완료'}
+                </button>
+            `}
+        </div>`;
+        return requestCard;
+    }
+
+    async function openUserModal(userId) {
+        try {
+            const token = getAccessToken();
+            const response = await sendRequestWithToken(`/api/users/${userId}`, 'GET', null, null);
+            const data = await response.json();
+            const user = data.response;
+
+            // 프로필 이미지, 이름, 성별 등 모달에 정보 채우기
+            document.getElementById('modalProfileImage').src = `data:image/png;base64,${user.profileImage}`;
+            document.getElementById('modalUserName').innerText = user.name;
+            const gender = user.gender === 'male' ? '남성' : '여성';
+            document.getElementById('modalUserGender').innerText = gender;
+            document.getElementById('modalUserMbti').innerText = user.mbti;
+            document.getElementById('modalUserRegion').innerText = user.region;
+            document.getElementById('modalUserMajor').innerText = user.major;
+
+            // 취미 목록을 모달에 채우기
+            const hobbiesList = document.getElementById('modalUserHobbies');
+            hobbiesList.innerHTML = '';  // 기존 취미 초기화
+            user.hobbies.forEach(hobby => {
+                hobbiesList.innerHTML += `<span class="badge bg-pink text-white me-2" style="font-size: 1.025rem; padding: 10px 15px;">${hobby.name}</span>`;
+            });
+
+            document.getElementById('modalUserExperience').innerText = user.niceExperience;
+            document.getElementById('modalUserPlan').innerText = user.plan;
+
+            // 모달을 띄우기 전에 Bootstrap Modal 객체 생성 및 표시
+            const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            userModal.show();
+
+        } catch (error) {
+            console.error('사용자 정보 가져오기 오류:', error);
+        }
+    }
+
+
+    async function updateRequest(requestId, status) {
+        try {
+            const response = await sendRequestWithToken(`http://localhost:8080/api/profiles/${requestId}`, 'PUT', {
+                'Content-Type': 'application/json',
+            }, JSON.stringify({ requestStatus: status }));
+
+            if (response.ok) {
+                alert(`요청이 ${status}로 업데이트되었습니다.`);
+                fetchRequests();
+            } else {
+                alert('요청 업데이트에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('업데이트 오류:', error);
+        }
+    }
+
+    function updatePaginationButtons(totalPages) {
+        const prevButton = document.getElementById('prevPage');
+        const nextButton = document.getElementById('nextPage');
+
+        prevButton.disabled = currentPage === 0;
+        nextButton.disabled = currentPage >= totalPages - 1;
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            fetchRequests();
+        }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+        currentPage++;
+        fetchRequests();
+    });
+
+    function toTranslateRequestType(type){
+        if (type === 'REGISTER'){
+            return '등록'
+        }else if (type === 'UPDATE'){
+            return '수정'
+        }
+    }
+
+    function toTranslateRequestStatus(status){
+        if (status === "PENDING"){
+            return '승인 대기중'
+        }else if (status === 'APPROVED'){
+            return '승인'
+        }else if(status === 'REJECTED'){
+            return '거부'
+        }
+    }
+    window.onload = fetchRequests; // 페이지 로드 시 요청 가져오기
+</script>
+</body>
+</html>

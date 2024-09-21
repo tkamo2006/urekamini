@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detail</title>
+  <title>유레카 정보 관리</title>
   <link rel="stylesheet" href="/css/navbar.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -15,20 +15,70 @@
       padding: 0 15px;
       border: none;
     }
-    .card-img-top {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
+    .post-detail {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #fff;
     }
-    .card-title {
-      font-weight: bold;
-      font-size: 1.25rem;
-      margin-bottom: 10px;
+    .post-detail h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
     }
-    .card-text {
+    .post-detail p {
       font-size: 1rem;
-      margin-bottom: 5px;
       color: #666;
+    }
+    .post-detail .btn-link {
+      font-size: 1rem;
+      color: #007bff;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: 1px solid #007bff;
+      background-color: #f8f9fa;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .post-detail .btn-link:hover {
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+    }
+    .link-url {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #007bff;
+      word-wrap: break-word;
+    }
+    .badge {
+      background-color: #ff007f;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .btn-thumbs-up {
+      background-color: #ffc107;
+      color: white;
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      margin-top: 20px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn-thumbs-up:hover {
+      background-color: #e0a800;
+      transform: scale(1.05);
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -37,16 +87,30 @@
 <!-- Navbar Include -->
 <header>
   <!-- Include navbar.html here -->
-  <!-- <include src="/path/to/navbar.html"></include> -->
 </header>
 
 <div class="container" style="margin-left: 250px; padding-top: 20px;">
   <!-- 게시물 상세 내용 -->
-  <div id="post-detail" class="card">
+  <div id="post-detail" class="post-detail">
     <!-- 게시물 내용이 여기에 추가됩니다 -->
   </div>
 
+  <!-- 따봉 버튼 추가 -->
+  <p>
+    <strong>따봉:</strong> <span id="thumbsUpCount">0</span>
+    <button class="btn-thumbs-up" onclick="addThumbsUp(postId)">따봉 👍</button>
+  </p>
+
+  <!-- 수정 및 삭제 버튼 추가 -->
+  <div class="action-buttons">
+    <!-- 수정 버튼 -->
+    <button id="editButton" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editModal" style="display: none;">수정</button>
+    <!-- 삭제 버튼 -->
+    <button id="deleteButton" class="btn btn-danger" onclick="deletePost(postId)" style="display: none;">삭제</button>
+  </div>
+
   <!-- 수정 모달 -->
+
   <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -65,6 +129,24 @@
               <textarea class="form-control" id="editContent" rows="5" required></textarea>
             </div>
             <div class="mb-3">
+              <label for="editHobby" class="form-label">취미 카테고리</label>
+              <select class="form-select" id="editHobby" required>
+                <option value="" disabled selected>취미 카테고리를 선택하세요</option>
+                <option value="CULTURAL_LIFE">문화생활</option>
+                <option value="EXERCISE">운동</option>
+                <option value="FOOD">음식</option>
+                <option value="GAME">게임</option>
+                <option value="MUSIC">음악</option>
+                <option value="TRAVEL">여행</option>
+                <option value="ETC">기타</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editVideoLink" class="form-label">비디오 링크</label>
+              <input type="text" class="form-control" id="editVideoLink" placeholder="비디오 링크를 입력하세요">
+              <div class="invalid-feedback">유효한 유튜브 링크를 입력하세요.</div>
+            </div>
+            <div class="mb-3">
               <button type="submit" class="btn btn-primary">저장</button>
             </div>
           </form>
@@ -75,12 +157,15 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/auth.js"></script>
 <script src="/js/navbar.js"></script>
+<script type="module" src="/js/auth.js"></script>
 
 <script>
+  let postId;
   document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('postId');
+    postId = urlParams.get('postId');
 
     if (postId) {
       fetchPostDetail(postId);
@@ -93,43 +178,133 @@
   });
 
   function fetchPostDetail(postId) {
-    fetch(`/api/posts/${postId}`)
-            .then(response => response.json())
-            .then(data => {
-              renderPostDetail(data.response);
-            });
+
+    const url = `/api/posts/${postId}`;
+    const method = 'GET';
+    const headers = new Headers({
+        'Content-Type': 'application/json'
+    });
+
+    sendRequestWithToken(url, method, headers, null)
+        .then(response => response.json())
+        .then(data => {
+           renderPostDetail(data);
+
+           updateThumbsUp(data.response.thumbsUp);
+           checkOwnership(data.response.userId); // 사용자 확인 함수 호출
+        });
   }
 
   function renderPostDetail(post) {
     const postDetail = document.getElementById('post-detail');
     postDetail.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">${post.title}</h5>
-                <p class="card-text">${post.content}</p>
-                <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
-            </div>
-        `;
+      <h1>${post.response.title}</h1>
+      <p><strong>작성자:</strong> ${post.response.name}</p>
+      <p><strong>취미:</strong> <span class="badge">${post.response.hobbyCategory}</span></p>
+      <p><strong>내용:</strong></p>
+      <p>${post.response.description}</p>
+      ${post.response.videoLink ? `
+        <a href="${post.response.videoLink}" class="btn-link" target="_blank">🔗 비디오 링크 보기</a>
+        <p class="link-url">링크 주소: <a href="${post.response.videoLink}" target="_blank">${post.response.videoLink}</a></p>
+      ` : ''}
+    `;
+
+    document.getElementById('editTitle').value = post.response.title;
+    document.getElementById('editContent').value = post.response.description;
+    document.getElementById('editHobby').value = post.response.hobbyCategory;
+    document.getElementById('editVideoLink').value = post.response.videoLink || '';
+  }
+
+  function checkOwnership(author) {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      console.error("토큰이 없습니다.");
+      return;
+    }
+
+    const decodedToken = parseJwt(token);
+    const currentUser = decodedToken.id;
+
+    if (author === currentUser) {
+      document.getElementById('editButton').style.display = 'inline-block';
+      document.getElementById('deleteButton').style.display = 'inline-block';
+    }
+
+    if (decodedToken.role === 'ROLE_ADMIN') {
+      document.getElementById('deleteButton').style.display = 'inline-block';
+    }
+  }
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  }
+
+  function updateThumbsUp(thumbsUp) {
+    document.getElementById('thumbsUpCount').textContent = thumbsUp;
+  }
+
+  function addThumbsUp(postId) {
+    const url = `/api/posts/${postId}/thumbsUp`;
+    const method = 'GET';
+    const headers = new Headers({
+        'Content-Type': 'application/json'
+    });
+
+    sendRequestWithToken(url, method, headers, null)
+        .then(response => response.json())
+        .then(data => {
+           updateThumbsUp(data.response);
+        });
   }
 
   function updatePost(postId) {
     const title = document.getElementById('editTitle').value;
-    const content = document.getElementById('editContent').value;
+    const description = document.getElementById('editContent').value;
+    const hobbyCategory = document.getElementById('editHobby').value;
+    const videoLink = document.getElementById('editVideoLink').value;
 
-    fetch(`/api/posts/${postId}`, {
-      method: 'PUT',
-      headers: {
+    const url = `/api/posts/${postId}`;
+    const method = 'POST';
+    const headers = new Headers({
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ title, content })
-    })
-            .then(response => response.json())
-            .then(data => {
-              alert('글이 수정되었습니다.');
-              document.querySelector('[data-bs-dismiss="modal"]').click(); // 모달 닫기
-              fetchPostDetail(postId); // 게시물 상세 새로 고침
-            });
+    });
+    const body = JSON.stringify({ title, description, hobbyCategory, videoLink });
+
+    sendRequestWithToken(url, method, headers, body)
+      .then(response => response.json())
+      .then(data => {
+         alert('글이 수정되었습니다.');
+         window.location.reload();
+      });
+  }
+
+  function deletePost(postId) {
+
+    if (confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
+
+      const url = `/api/posts/${postId}`;
+      const method = 'DELETE';
+      const headers = new Headers({
+        'Content-Type': 'application/json'
+      });
+
+      sendRequestWithToken(url, method, headers, null)
+        .then(response => {
+                if (response.ok) {
+                  alert('게시물이 삭제되었습니다.');
+                  window.location.href = '/board.html'; // 또는 다른 페이지로 리디렉션
+                } else {
+                  alert('게시물 삭제에 실패했습니다.');
+                }
+       });
+    }
   }
 </script>
-
 </body>
 </html>

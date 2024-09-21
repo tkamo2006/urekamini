@@ -20,7 +20,7 @@ public class JoinService {
         String name = joinDto.getName();
         String username = joinDto.getUsername();
         String password = joinDto.getPassword();
-        Role role = joinDto.getRole();
+        Role role = Role.USER;
         String gender = joinDto.getGender();
 
 
@@ -29,5 +29,10 @@ public class JoinService {
             User user = User.builder().name(name).username(username).password(bCryptPasswordEncoder.encode(password)).role(role).gender(gender).build();
             userRepository.save(user);
         }
+    }
+
+    public Boolean existsByUsername(String username) {
+
+        return userRepository.existsByUsername(username);
     }
 }
