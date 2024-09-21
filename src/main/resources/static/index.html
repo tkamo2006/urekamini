@@ -418,19 +418,11 @@ function toggleSubHobbies() {
             .map(checkbox => checkbox.value);
         formData.append('subHobbies', JSON.stringify(selectedSubHobbies));
 
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            console.error("토큰이 없습니다.");
-            return;
-        }
+        const url = `/api/profiles`;
+        const method = 'POST';
 
-        fetch(`/api/profiles`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token
-            },
-            body: formData
-        }).then(response => response.json())
+        sendRequestWithToken(url, method, null, formData)
+            .then(response => response.json())
             .then(data => {
                 alert('프로필이 저장 요청이 완료되었습니다.');
                 // 필요한 경우 페이지를 리로드하거나 UI를 업데이트
@@ -448,18 +440,14 @@ function toggleSubHobbies() {
 
     // 프로필 등록/수정 모달 로드 시 데이터 처리 (GET)
     function loadUserProfile() {
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            console.error("토큰이 없습니다.");
-            return;
-        }
-        fetch(`/api/profiles/upload`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
-            })
+
+        const url = `/api/profiles/upload`;
+        const method = 'GET';
+        const headers = new Headers({
+            'Content-Type': 'application/json'
+        });
+
+        sendRequestWithToken(url, method, headers, null)
             .then(response => response.json())
             .then(data => {
                 if (data) {
@@ -594,24 +582,17 @@ function toggleSubHobbies() {
 function handleFamiliarityClick(event) {
     event.preventDefault(); // 기본 동작 중단
 
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-        alert("로그인이 필요합니다.");
-        window.location.href = '/login.html';
-        return;
-    }
-
     const familiarityUrl = event.currentTarget.getAttribute('href');
 
-    fetch('/api/profiles/check', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
+    const url = '/api/profiles/check';
+    const method = 'GET';
+    const headers = new Headers({
+        'Content-Type': 'application/json'
+    });
+
+    sendRequestWithToken(url, method, headers, null)
+        .then(response => response.json())
+        .then(data => {
         if (data.response.exist) {
             window.location.href = familiarityUrl;
         } else {
