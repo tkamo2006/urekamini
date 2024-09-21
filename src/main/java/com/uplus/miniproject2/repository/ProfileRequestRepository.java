@@ -19,11 +19,12 @@ public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, 
 
     Optional<ProfileRequest> findByUserId(Long userId);
 
-    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.name, p.id, " +
+    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.username, p.id, " +
             "CAST(pr.requestType AS string), CAST(pr.requestStatus AS string)) " +
             "FROM ProfileRequest pr " +
             "JOIN pr.user u " +
-            "JOIN pr.profile p")
+            "JOIN pr.profile p " +
+            "ORDER BY CASE WHEN pr.requestStatus = 'PENDING' THEN 0 ELSE 1 END, pr.id DESC")
     Page<ProfileRequestDto> findAllDto(Pageable pageable);
 
 }
