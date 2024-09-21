@@ -64,8 +64,8 @@
         }
 
         .btn-custom {
-            height: 45px;
-            padding: 0 15px;
+            height: 35px;
+            padding: 0 25px;
             border-radius: 4px;
             transition: background-color 0.3s;
         }
@@ -188,19 +188,19 @@
         const requestCard = document.createElement('div');
         requestCard.className = 'request-card';
         requestCard.innerHTML = `
-        <span>사용자: ${item.username}</span>
+        <span>사용자: ${item.userName}</span>
         <span>요청 타입: ${toTranslateRequestType(item.requestType)}</span>
         <span>상태: ${toTranslateRequestStatus(item.requestStatus)}</span>
+        <button class="btn btn-light btn-custom  view-details" onclick="openUserModal(${item.userId})">프로필</button>
         <div>
             ${isPending ? `
-                <button class="btn btn-custom btn-approved" onclick="updateRequest(${item.id}, 'APPROVED')">승인</button>
-                <button class="btn btn-custom btn-rejected" onclick="updateRequest(${item.id}, 'REJECTED')">거부</button>
+                <button class="btn btn-custom btn-approved" onclick="updateRequest(${item.profileRequestId}, 'APPROVED')">승인</button>
+                <button class="btn btn-custom btn-rejected" onclick="updateRequest(${item.profileRequestId}, 'REJECTED')">거부</button>
             ` : `
                 <button class="btn btn-custom ${item.requestStatus === 'REJECTED' ? 'btn-danger' : 'btn-success'}" disabled>
                     ${item.requestStatus === 'REJECTED' ? '거부' : item.requestStatus === 'APPROVED' ? '완료' : '처리 완료'}
                 </button>
             `}
-            <button class="btn btn-light btn-custom  view-details" onclick="openUserModal(${item.user})">프로필</button>
         </div>`;
         return requestCard;
     }
@@ -288,7 +288,7 @@
 
     function toTranslateRequestStatus(status){
         if (status === "PENDING"){
-            return '보류'
+            return '승인 대기중'
         }else if (status === 'APPROVED'){
             return '승인'
         }else if(status === 'REJECTED'){

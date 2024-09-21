@@ -19,7 +19,7 @@ public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, 
 
     Optional<ProfileRequest> findByUserId(Long userId);
 
-    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.username, p.id, " +
+    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.name, p.id, " +
             "CAST(pr.requestType AS string), CAST(pr.requestStatus AS string)) " +
             "FROM ProfileRequest pr " +
             "JOIN pr.user u " +
