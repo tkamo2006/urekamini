@@ -37,6 +37,9 @@ public class MapServiceImpl implements MapService {
 
     @Override
     public Region findRegionByName(String name) {
-        return regionRepository.findByName(name);
+        System.out.println("Searching for region: " + name); // 출력문 추가
+        Region region = regionRepository.findByName(name);
+        System.out.println("Found region: " + region); // 결과 출력
+        return region;
     }
 }

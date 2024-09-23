@@ -240,8 +240,8 @@
 
         // 사용자 정보를 가져오기 위한 API 요청
         Promise.all([
-            fetch(`/api/users/${userId1}`),
-            fetch(`/api/users/${userId2}`)
+            fetch(`/api/users/${userId1}`, { credentials: 'include' }),
+            fetch(`/api/users/${userId2}`, { credentials: 'include' })
         ])
             .then(responses => {
                 if (!responses[0].ok || !responses[1].ok) {
@@ -257,11 +257,12 @@
                 const regionName1 = encodeURIComponent(user1.region);
                 const regionName2 = encodeURIComponent(user2.region);
 
-                // 지역 정보 API 요청
+                console.log(`Fetching region data for ${regionName1} and ${regionName2}`);
                 return Promise.all([
                     fetch(`/api/map/regions/${regionName1}`),
                     fetch(`/api/map/regions/${regionName2}`)
                 ]).then(responses => {
+                    console.log('Responses:', responses);
                     if (!responses[0].ok || !responses[1].ok) {
                         throw new Error('지역 정보를 가져오는 데 실패했습니다.');
                     }
@@ -271,6 +272,7 @@
                         user2
                     }));
                 });
+
             })
             .then(({ regionData, user1, user2 }) => {
                 const region1 = regionData[0].response;
