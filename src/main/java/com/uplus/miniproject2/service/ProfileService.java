@@ -131,7 +131,8 @@ public class ProfileService {
     public List<String> parseJsonArray(String jsonArray) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(jsonArray, new TypeReference<List<String>>(){});
+            return mapper.readValue(jsonArray, new TypeReference<List<String>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -156,11 +157,13 @@ public class ProfileService {
     }
 
     public ProfileExistDto getProfile(Long loginUserId) {
+        ProfileRequest pr = profileRequestRepository.findByUserId(loginUserId)
+                .orElseThrow(() -> new IllegalArgumentException());
         Profile loginUserProfile = profileRepository.findByUserId(loginUserId);
 
         ProfileExistDto profileExistDto = new ProfileExistDto();
 
-        if (loginUserProfile == null) {
+        if (loginUserProfile == null || pr.getRequestStatus().isNotApproved()) {
             profileExistDto.setExist(false);
         } else {
             profileExistDto.setExist(true);
