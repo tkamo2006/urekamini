@@ -53,7 +53,8 @@ public class SecurityConfig {
                         "/api/join/**",
                         "/check",
                         "/api/users/**",
-                        "/css/**", "/js/**", "/img/**"
+                        "/css/**", "/js/**", "/img/**",
+                        "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
                 ).permitAll()// 누구나 접근 가능
                 .requestMatchers("/api/posts/**", "/api/map/**", "/api/statistics/**", "/api/profiles/**",
                         "/api/familiarity/**")

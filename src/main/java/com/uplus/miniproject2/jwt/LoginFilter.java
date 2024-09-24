@@ -27,18 +27,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
 
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password,
+                null);
 
         return authenticationManager.authenticate(authToken);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authentication) {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String username = customUserDetails.getUsername();
@@ -48,9 +51,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
         Long id = customUserDetails.getId();
-        String accessToken = jwtUtil.createJwt(id, username, role, 60*60*10*100L); // 1 hour
-        String refreshToken = jwtUtil.createJwt(id, username, role, 24*60*60*1000L); // 24 hour
-
+        String accessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 10 * 100L); // 1 hour
+        String refreshToken = jwtUtil.createJwt(id, username, role, 24 * 60 * 60 * 1000L); // 24 hour
 
         // Set Refresh Token in HttpOnly cookie
         // 리프레시 토큰이 HttpOnly, Secure 속성으로 쿠키에 저장되어 있을 때, 브라우저는 이를 서버로 자동으로 전송
@@ -62,14 +64,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setPath("/"); // 쿠키의 유효 경로를 설정, /로 설정하면 쿠키는 웹 애플리케이션의 모든 경로에서 접근할 수 있다.
 
         response.addCookie(cookie); // 이 메서드는 생성된 쿠키를 HTTP 응답에 추가
-                                    // 쿠키는 이후의 요청에서 자동으로 서버에 포함
+        // 쿠키는 이후의 요청에서 자동으로 서버에 포함
 
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) {
 
         response.setStatus(401);
     }

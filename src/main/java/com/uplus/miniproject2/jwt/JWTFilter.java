@@ -44,7 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // 쿠키에서 리프레시 토큰 가져오기
             String refreshToken = getRefreshTokenFromCookies(request);
-            logger.info("refresh Token" + refreshToken);
+            logger.info("refresh Token " + refreshToken);
 
             // 리프레시 토큰이 존재하고 유효한 경우
             if (refreshToken != null && !jwtUtil.isExpired(refreshToken)) {
@@ -56,7 +56,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 Long id = jwtUtil.getId(refreshToken);
 
                 // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 10 *100L);
+                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 10 * 100L);
                 logger.info("New access token: " + newAccessToken);
 
                 // 응답 헤더에 새 액세스 토큰 추가
@@ -86,14 +86,8 @@ public class JWTFilter extends OncePerRequestFilter {
     private void saveAuthentication(String token) {
         // 액세스 토큰이 유효한 경우 사용자 정보 추출 및 인증 설정
         String username = jwtUtil.getUsername(token);
-        String extractRole = jwtUtil.getRole(token);
-        String role = "";
-        if (extractRole.contains("_")) {
-            role = extractRole.split("_")[1];
-        } else {
-            role = extractRole;
-        }
-//        String role = jwtUtil.getRole(token).split("_")[1];
+        String role = jwtUtil.getRole(token).split("_")[1];
+
         Long userId = jwtUtil.getId(token);
 
         // 사용자 정보로 User 객체 생성

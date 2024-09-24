@@ -81,7 +81,8 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .where(builder
                         .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
                         .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED)))
-                .fetchCount();
+                .fetch()
+                .size();
 
         return new PageImpl<>(result, pageable, total);
     }
