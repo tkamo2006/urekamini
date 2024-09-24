@@ -194,40 +194,18 @@
                                 <textarea class="form-control" id="plan" placeholder="계획을 입력하세요" rows="3" required></textarea>
                             </div>
 
-                            <!-- 취미 선택 -->
+                            <!-- 취미 선택 (버튼으로 변경) -->
                             <div class="mb-3">
                                 <label class="form-label">취미 <span class="text-danger">*</span></label>
-                                <div class="d-flex flex-wrap">
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="CULTURAL_LIFE" id="hobby1">
-                                        <label class="form-check-label" for="hobby1">문화생활</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="EXERCISE" id="hobby2">
-                                        <label class="form-check-label" for="hobby2">운동</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="FOOD" id="hobby3">
-                                        <label class="form-check-label" for="hobby3">음식</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="GAME" id="hobby4">
-                                        <label class="form-check-label" for="hobby4">게임</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="MUSIC" id="hobby5">
-                                        <label class="form-check-label" for="hobby5">음악</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="TRAVEL" id="hobby6">
-                                        <label class="form-check-label" for="hobby6">여행</label>
-                                    </div>
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input hobby-checkbox" type="checkbox" value="ETC" id="hobby7">
-                                        <label class="form-check-label" for="hobby7">기타</label>
-                                    </div>
+                                <div class="d-flex flex-wrap" id="hobbyButtons">
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="CULTURAL_LIFE">문화생활</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="EXERCISE">운동</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="FOOD">음식</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="GAME">게임</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="MUSIC">음악</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="TRAVEL">여행</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="ETC">기타</button>
                                 </div>
-                                <div class="invalid-feedback" id="hobbyError" style="display: none;">하나 이상의 취미를 선택하세요.</div>
                             </div>
 
 
@@ -240,6 +218,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <span class="text-muted ms-2">* 관리자 승인 후 프로필이 등록됩니다.</span>
                         <button type="submit" class="btn btn-primary">저장</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     </div>
@@ -465,7 +444,6 @@
 
 
 
-
     // 세부 취미 리스트
     const hobbyDetails = {
         'CULTURAL_LIFE': ['축구 관람', '야구 관람', '뮤지컬', '연극', '영화', '독서', '애니메이션 시청', '금속 공예'],
@@ -477,90 +455,64 @@
         'ETC': ['강아지', '고양이', '깃허브 구경', '드라이브', '필름 사진', '귀여운거 보기', '글 쓰기', '밸런스 게임 만들기', '알고리즘 문제 풀기', '트레이딩', '잡담하기']
     };
 
-    // 선택된 세부 취미를 저장할 객체
-    let selectedSubHobbies = {};
+    const subHobbiesContainer = document.getElementById('subHobbiesContainer');
+    const subHobbiesDiv = document.getElementById('subHobbies');
 
-    // 취미 체크박스에 이벤트 리스너 추가
-    document.querySelectorAll('.hobby-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            toggleSubHobbies(); // 체크박스의 value에 맞는 세부 취미를 토글
+    // 세부 취미를 기억하기 위한 배열
+    let selectedSubHobbies = [];
+
+    // 버튼 클릭 이벤트 리스너
+    const hobbyButtons = document.querySelectorAll('.hobby-btn');
+    hobbyButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const hobby = this.getAttribute('data-value'); // data-value 속성으로 변경
+
+            // 세부 취미 목록 초기화
+            subHobbiesDiv.innerHTML = '';
+            subHobbiesContainer.style.display = 'block';
+
+            // 선택한 취미에 해당하는 세부 취미 표시
+            const hobbies = hobbyDetails[hobby];
+
+            // hobbies가 정의되어 있는지 확인
+            if (hobbies) {
+                hobbies.forEach(subHobby => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-check', 'me-3');
+
+                    // 체크박스 상태 설정
+                    const isChecked = selectedSubHobbies.includes(subHobby);
+                    div.innerHTML = `
+                    <input class="form-check-input sub-hobby-checkbox" type="checkbox" value="${subHobby}" id="${subHobby}" ${isChecked ? 'checked' : ''}>
+                    <label class="form-check-label" for="${subHobby}">${subHobby}</label>
+                `;
+                    subHobbiesDiv.appendChild(div);
+                });
+            } else {
+                console.error(`No hobbies found for: ${hobby}`);
+            }
+
+            // 체크박스 이벤트 리스너
+            const subHobbyCheckboxes = document.querySelectorAll('.sub-hobby-checkbox');
+            subHobbyCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectedSubHobbies.push(this.value);
+                    } else {
+                        selectedSubHobbies = selectedSubHobbies.filter(hobby => hobby !== this.value);
+                    }
+                });
+            });
         });
     });
-
-    // 선택된 취미에 맞는 세부 취미 토글
-    function toggleSubHobbies() {
-        const subHobbyDiv = document.getElementById('subHobbiesContainer');
-        const subHobbyOptions = document.getElementById('subHobbies');
-
-        // 기존의 세부 취미 초기화
-        subHobbyOptions.innerHTML = '';
-
-        const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
-            .map(checkbox => checkbox.value);
-
-        if (selectedHobbies.length > 0) {
-            subHobbyDiv.style.display = 'block'; // 세부 취미 보이기
-
-            selectedHobbies.forEach(hobby => {
-                if (hobbyDetails[hobby]) {
-                    hobbyDetails[hobby].forEach(subHobby => {
-                        const isChecked = selectedSubHobbies[hobby] && selectedSubHobbies[hobby].includes(subHobby); // 선택 상태 확인
-                        const option = document.createElement('div');
-                        option.className = 'form-check me-3';
-                        option.innerHTML = `
-                        <input class="form-check-input" type="checkbox" value="${subHobby}" id="subHobby_${subHobby}" ${isChecked ? 'checked' : ''}>
-                        <label class="form-check-label" for="subHobby_${subHobby}">${subHobby}</label>
-                    `;
-                        subHobbyOptions.appendChild(option);
-
-                        // 세부 취미 선택 이벤트 리스너 추가
-                        option.querySelector('input').addEventListener('change', function () {
-                            if (this.checked) {
-                                if (!selectedSubHobbies[hobby]) {
-                                    selectedSubHobbies[hobby] = [];
-                                }
-                                selectedSubHobbies[hobby].push(subHobby); // 선택된 세부 취미 추가
-                            } else {
-                                // 선택 해제 시 제거
-                                selectedSubHobbies[hobby] = selectedSubHobbies[hobby].filter(item => item !== subHobby);
-                            }
-                        });
-                    });
-                }
-            });
-        } else {
-            subHobbyDiv.style.display = 'none'; // 세부 취미 숨기기
-        }
-    }
-
-
-
-    // 현재 선택된 세부 취미 체크 여부 확인
-    function isSubHobbyChecked(subHobby) {
-        const selectedSubHobbies = Array.from(document.querySelectorAll('#subHobbies input:checked'))
-            .map(checkbox => checkbox.value);
-        return selectedSubHobbies.includes(subHobby);
-    }
-
 
     // 프로필 저장 로직 (POST)
     document.getElementById('profileForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        const hobbies = document.querySelectorAll('.hobby-checkbox:checked');
-        const hobbyError = document.getElementById('hobbyError');
-        const subHobbies = document.querySelectorAll('#subHobbies input:checked');
+
         const subHobbyError = document.getElementById('subHobbyError'); // 세부 취미 에러 메시지 요소
 
-        // 유효성 검사
-        if (hobbies.length === 0) {
-            e.preventDefault();
-            hobbyError.style.display = 'block'; // 에러 메시지 표시
-            return; // 함수 종료
-        } else {
-            hobbyError.style.display = 'none'; // 에러 메시지 숨기기
-        }
-
-        if (subHobbies.length === 0) {
+        if (selectedSubHobbies.length === 0) {
             e.preventDefault();
             subHobbyError.style.display = 'block'; // 세부 취미 에러 메시지 표시
             return; // 함수 종료
@@ -585,11 +537,7 @@
         const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
             .map(checkbox => checkbox.value);
         formData.append('hobbies', JSON.stringify(selectedHobbies));
-
-        // 선택된 세부 취미 처리
-        const selectedSubHobbies = Array.from(document.querySelectorAll('#subHobbies input:checked'))
-            .map(checkbox => checkbox.value);
-        formData.append('subHobbies', JSON.stringify(selectedSubHobbies));
+        formData.append('subHobbies', selectedSubHobbies);
 
         const url = `/api/profiles`;
         const method = 'POST';
@@ -619,7 +567,6 @@
         const headers = new Headers({
             'Content-Type': 'application/json'
         });
-        console.log('모달 로드시 함수')
         sendRequestWithToken(url, method, headers, null)
             .then(response => response.json())
             .then(data => {
@@ -631,11 +578,6 @@
                     document.getElementById('profile_major').value = data.response.major || '';
                     document.getElementById('plan').value = data.response.plan || '';
 
-                    // if (data.response.profileImage) {
-                    //     document.getElementById('profilePreview').src = `data:image/png;base64,${data.response.profileImage}`;
-                    // } else {
-                    //     document.getElementById('profilePreview').src = '/img/img.png'; // 이미지가 없을 경우
-                    // }
                 } else {
                     // 데이터가 없으면 placeholder 표시
                     document.getElementById('niceExperience').placeholder = '좋았던 경험을 입력하세요';
@@ -658,6 +600,14 @@
             reader.readAsDataURL(file);
         } else {
             preview.src = 'img.png';  // 기본 이미지로 초기화
+        }
+    });
+
+    // 페이지가 로드될 때 문화생활 버튼 자동 클릭
+    document.addEventListener("DOMContentLoaded", function () {
+        const culturalLifeButton = document.querySelector('button[data-value="CULTURAL_LIFE"]');
+        if (culturalLifeButton) {
+            culturalLifeButton.click(); // 문화생활 버튼 클릭
         }
     });
 </script>

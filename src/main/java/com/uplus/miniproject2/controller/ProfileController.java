@@ -13,23 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.uplus.miniproject2.dto.ProfileRequestDto;
-import com.uplus.miniproject2.entity.hobby.Hobby;
-import com.uplus.miniproject2.entity.proflie.Profile;
-import com.uplus.miniproject2.entity.proflie.ProfileRequest;
-import com.uplus.miniproject2.entity.proflie.RequestType;
-import com.uplus.miniproject2.service.ProfileService;
-import com.uplus.miniproject2.util.ApiUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 @RestController
@@ -48,12 +36,11 @@ public class ProfileController {
             @RequestParam("plan") String plan,
             @RequestParam("niceExperience") String niceExperience,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestParam("subHobbies") String subHobbiesJson
+            @RequestParam("subHobbies") List<String> subHobbies
     ) throws IOException {
 
 
         Long userId = loginUser.getId();
-        List<String> subHobbies = profileService.parseJsonArray(subHobbiesJson);
         byte[] imageBytes = profileImage != null ? profileImage.getBytes() : Objects.requireNonNull(getClass().getResourceAsStream("/static/img/img.png")).readAllBytes();
 
         ProfilePageProfileResponseDto profileResponseDto
