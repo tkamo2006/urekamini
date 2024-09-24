@@ -44,7 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // 쿠키에서 리프레시 토큰 가져오기
             String refreshToken = getRefreshTokenFromCookies(request);
-            logger.info("refresh Token" + refreshToken);
+            logger.info("refresh Token " + refreshToken);
 
             // 리프레시 토큰이 존재하고 유효한 경우
             if (refreshToken != null && !jwtUtil.isExpired(refreshToken)) {
@@ -52,11 +52,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 // 리프레시 토큰에서 사용자 정보 추출
                 String username = jwtUtil.getUsername(refreshToken);
-                String role = jwtUtil.getRole(refreshToken).split("_")[1];
+                String role = jwtUtil.getRole(refreshToken);
                 Long id = jwtUtil.getId(refreshToken);
 
                 // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 100L);
+                String newAccessToken = jwtUtil.createJwt(id, username, role, 60 * 60 * 10 * 100L);
                 logger.info("New access token: " + newAccessToken);
 
                 // 응답 헤더에 새 액세스 토큰 추가
@@ -64,7 +64,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
                 // 응답을 작성하고 필터 체인 종료
                 response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().flush();
+//                response.getWriter().flush();
+
+                saveAuthentication(newAccessToken);
+
+                filterChain.doFilter(request, response);
                 return;
             } else {
                 // 리프레시 토큰이 없거나 만료된 경우 오류 응답 반환
@@ -73,9 +77,17 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
+        saveAuthentication(token);
+
+        // 다음 필터로 처리 넘김
+        filterChain.doFilter(request, response);
+    }
+
+    private void saveAuthentication(String token) {
         // 액세스 토큰이 유효한 경우 사용자 정보 추출 및 인증 설정
         String username = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token).split("_")[1];
+
         Long userId = jwtUtil.getId(token);
 
         // 사용자 정보로 User 객체 생성
@@ -94,9 +106,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 customUserDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        // 다음 필터로 처리 넘김
-        filterChain.doFilter(request, response);
     }
 
 

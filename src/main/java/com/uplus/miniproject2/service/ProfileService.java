@@ -1,7 +1,5 @@
 package com.uplus.miniproject2.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uplus.miniproject2.dto.ProfileExistDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
@@ -145,15 +143,9 @@ public class ProfileService {
 
     public Page<ProfileRequestDto> getProfileRequests(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProfileRequest> profileRequests = profileRequestRepository.findAll(pageable);
+        Page<ProfileRequestDto> profileRequests = profileRequestRepository.findAllDto(pageable);
 
-        return profileRequests.map(profileRequest -> new ProfileRequestDto(
-                profileRequest.getId(),
-                profileRequest.getUser().getId(), // User ID
-                profileRequest.getProfile().getId(), // Profile ID
-                profileRequest.getRequestType().name(), // RequestType as String
-                profileRequest.getRequestStatus().name() // RequestStatus as String
-        ));
+        return profileRequests;
     }
 
     public ProfileExistDto getProfile(Long loginUserId) {

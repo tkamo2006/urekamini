@@ -11,11 +11,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProfileRequestDto {
 
-    private Long id;
+    private Long profileRequestId;
 
-    private Long user;
+    private Long userId;
 
-    private Long profile;
+    private String userName;
+
+    private Long profileId;
 
     private String requestType;
 
