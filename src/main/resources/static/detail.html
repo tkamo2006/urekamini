@@ -156,6 +156,141 @@
   </div>
 </div>
 
+<!-- 프로필 등록/수정 모달 -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #ff007f;">
+        <h5 class="modal-title text-white" id="profileModalLabel">프로필 등록/수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="profileForm">
+          <div class="row">
+            <!-- 프로필 이미지 -->
+            <div class="col-md-4 mb-3">
+              <label for="profileImage" class="form-label">프로필 이미지</label>
+              <input type="file" class="form-control" id="profileImage" accept="image/png, image/jpeg, image/jpg, image/gif">
+              <div class="text-center">
+                <img id="profilePreview" src="/img/img.png" class="img-fluid rounded mt-2" alt="프로필 이미지 미리보기" style="width: 300px; height: 300px; object-fit: cover;">
+              </div>
+            </div>
+
+            <!-- 프로필 정보 입력란 -->
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label for="mbti" class="form-label">MBTI</label>
+                <select class="form-select" id="profile_mbti" required>
+                  <option value="">선택하세요</option>
+                  <option value="ISTJ">ISTJ</option>
+                  <option value="ESTJ">ESTJ</option>
+                  <option value="INTJ">INTJ</option>
+                  <option value="ENTJ">ENTJ</option>
+                  <option value="ISFJ">ISFJ</option>
+                  <option value="ESFJ">ESFJ</option>
+                  <option value="INFJ">INFJ</option>
+                  <option value="ENFJ">ENFJ</option>
+                  <option value="ISTP">ISTP</option>
+                  <option value="ESTP">ESTP</option>
+                  <option value="INTP">INTP</option>
+                  <option value="ENTP">ENTP</option>
+                  <option value="ISFP">ISFP</option>
+                  <option value="ESFP">ESFP</option>
+                  <option value="INFP">INFP</option>
+                  <option value="ENFP">ENFP</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="region" class="form-label">사는 지역</label>
+                <select class="form-select" id="region" required>
+                  <option value="">선택하세요</option>
+                  <option value="파주">파주</option>
+                  <option value="인천">인천</option>
+                  <option value="익산">익산</option>
+                  <option value="서울">서울</option>
+                  <option value="대전">대전</option>
+                  <option value="대구">대구</option>
+                  <option value="고양">고양</option>
+                  <option value="광주">광주</option>
+                  <option value="시흥">시흥</option>
+                  <option value="군포">군포</option>
+                  <option value="평택">평택</option>
+                  <option value="성남">성남</option>
+                  <option value="천안">천안</option>
+                  <option value="거제">거제</option>
+                  <option value="부산">부산</option>
+                  <option value="창원">창원</option>
+                  <option value="의왕">의왕</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="major" class="form-label">전공</label>
+                <input type="text" class="form-control" id="profile_major" placeholder="전공을 입력하세요" required>
+              </div>
+              <div class="mb-3">
+                <label for="niceExperience" class="form-label">좋았던 경험</label>
+                <textarea class="form-control" id="niceExperience" placeholder="좋았던 경험을 입력하세요" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="plan" class="form-label">앞으로의 계획</label>
+                <textarea class="form-control" id="plan" placeholder="계획을 입력하세요" rows="3" required></textarea>
+              </div>
+
+              <!-- 취미 선택 -->
+              <div class="mb-3">
+                <label class="form-label">취미 <span class="text-danger">*</span></label>
+                <div class="d-flex flex-wrap">
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="CULTURAL_LIFE" id="hobby1">
+                    <label class="form-check-label" for="hobby1">문화생활</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="EXERCISE" id="hobby2">
+                    <label class="form-check-label" for="hobby2">운동</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="FOOD" id="hobby3">
+                    <label class="form-check-label" for="hobby3">음식</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="GAME" id="hobby4">
+                    <label class="form-check-label" for="hobby4">게임</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="MUSIC" id="hobby5">
+                    <label class="form-check-label" for="hobby5">음악</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="TRAVEL" id="hobby6">
+                    <label class="form-check-label" for="hobby6">여행</label>
+                  </div>
+                  <div class="form-check me-3">
+                    <input class="form-check-input hobby-checkbox" type="checkbox" value="ETC" id="hobby7">
+                    <label class="form-check-label" for="hobby7">기타</label>
+                  </div>
+                </div>
+                <div class="invalid-feedback" id="hobbyError" style="display: none;">하나 이상의 취미를 선택하세요.</div>
+              </div>
+
+
+              <!-- 세부 취미 선택 -->
+              <div class="mb-3" id="subHobbiesContainer" style="display: none;">
+                <label class="form-label">세부 취미</label>
+                <div class="d-flex flex-wrap" id="subHobbies"></div>
+                <div class="invalid-feedback" id="subHobbyError" style="display: none;">하나 이상의 세부 취미를 선택하세요.</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">저장</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script src="/js/navbar.js"></script>
@@ -305,6 +440,201 @@
        });
     }
   }
+
+  // 세부 취미 리스트
+  const hobbyDetails = {
+    'CULTURAL_LIFE': ['축구 관람', '야구 관람', '뮤지컬', '연극', '영화', '독서', '애니메이션 시청', '금속 공예'],
+    'EXERCISE': ['헬스', '검도', '다이어트', '축구', '농구', '배드민턴', '스케이트 보드', '산책', '달리기', '줄넘기', '운동', '수영'],
+    'FOOD': ['커피', '요리', '맛집 찾기', '음주', '빵집 찾기'],
+    'GAME': ['게임'],
+    'MUSIC': ['음악 감상', '노래'],
+    'TRAVEL': ['여행'],
+    'ETC': ['강아지', '고양이', '깃허브 구경', '드라이브', '필름 사진', '귀여운거 보기', '글 쓰기', '밸런스 게임 만들기', '알고리즘 문제 풀기', '트레이딩', '잡담하기']
+  };
+
+  // 선택된 세부 취미를 저장할 객체
+  let selectedSubHobbies = {};
+
+  // 취미 체크박스에 이벤트 리스너 추가
+  document.querySelectorAll('.hobby-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      toggleSubHobbies(); // 체크박스의 value에 맞는 세부 취미를 토글
+    });
+  });
+
+  // 선택된 취미에 맞는 세부 취미 토글
+  function toggleSubHobbies() {
+    const subHobbyDiv = document.getElementById('subHobbiesContainer');
+    const subHobbyOptions = document.getElementById('subHobbies');
+
+    // 기존의 세부 취미 초기화
+    subHobbyOptions.innerHTML = '';
+
+    const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+
+    if (selectedHobbies.length > 0) {
+      subHobbyDiv.style.display = 'block'; // 세부 취미 보이기
+
+      selectedHobbies.forEach(hobby => {
+        if (hobbyDetails[hobby]) {
+          hobbyDetails[hobby].forEach(subHobby => {
+            const isChecked = selectedSubHobbies[hobby] && selectedSubHobbies[hobby].includes(subHobby); // 선택 상태 확인
+            const option = document.createElement('div');
+            option.className = 'form-check me-3';
+            option.innerHTML = `
+                        <input class="form-check-input" type="checkbox" value="${subHobby}" id="subHobby_${subHobby}" ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label" for="subHobby_${subHobby}">${subHobby}</label>
+                    `;
+            subHobbyOptions.appendChild(option);
+
+            // 세부 취미 선택 이벤트 리스너 추가
+            option.querySelector('input').addEventListener('change', function () {
+              if (this.checked) {
+                if (!selectedSubHobbies[hobby]) {
+                  selectedSubHobbies[hobby] = [];
+                }
+                selectedSubHobbies[hobby].push(subHobby); // 선택된 세부 취미 추가
+              } else {
+                // 선택 해제 시 제거
+                selectedSubHobbies[hobby] = selectedSubHobbies[hobby].filter(item => item !== subHobby);
+              }
+            });
+          });
+        }
+      });
+    } else {
+      subHobbyDiv.style.display = 'none'; // 세부 취미 숨기기
+    }
+  }
+
+
+
+  // 현재 선택된 세부 취미 체크 여부 확인
+  function isSubHobbyChecked(subHobby) {
+    const selectedSubHobbies = Array.from(document.querySelectorAll('#subHobbies input:checked'))
+            .map(checkbox => checkbox.value);
+    return selectedSubHobbies.includes(subHobby);
+  }
+
+
+  // 프로필 저장 로직 (POST)
+  document.getElementById('profileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const hobbies = document.querySelectorAll('.hobby-checkbox:checked');
+    const hobbyError = document.getElementById('hobbyError');
+    const subHobbies = document.querySelectorAll('#subHobbies input:checked');
+    const subHobbyError = document.getElementById('subHobbyError'); // 세부 취미 에러 메시지 요소
+
+    // 유효성 검사
+    if (hobbies.length === 0) {
+      e.preventDefault();
+      hobbyError.style.display = 'block'; // 에러 메시지 표시
+      return; // 함수 종료
+    } else {
+      hobbyError.style.display = 'none'; // 에러 메시지 숨기기
+    }
+
+    if (subHobbies.length === 0) {
+      e.preventDefault();
+      subHobbyError.style.display = 'block'; // 세부 취미 에러 메시지 표시
+      return; // 함수 종료
+    } else {
+      subHobbyError.style.display = 'none'; // 세부 취미 에러 메시지 숨기기
+    }
+
+    const formData = new FormData();
+    formData.append('niceExperience', document.getElementById('niceExperience').value);
+    formData.append('mbti', document.getElementById('profile_mbti').value);
+    formData.append('region', document.getElementById('region').value);
+    formData.append('major', document.getElementById('profile_major').value);
+    formData.append('plan', document.getElementById('plan').value);
+
+    // 프로필 이미지 처리
+    const imageFile = document.getElementById('profileImage').files[0];
+    if (imageFile) {
+      formData.append('profileImage', imageFile);
+    }
+
+    // 선택된 취미 처리
+    const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+    formData.append('hobbies', JSON.stringify(selectedHobbies));
+
+    // 선택된 세부 취미 처리
+    const selectedSubHobbies = Array.from(document.querySelectorAll('#subHobbies input:checked'))
+            .map(checkbox => checkbox.value);
+    formData.append('subHobbies', JSON.stringify(selectedSubHobbies));
+
+    const url = `/api/profiles`;
+    const method = 'POST';
+
+    sendRequestWithToken(url, method, null, formData)
+            .then(response => response.json())
+            .then(data => {
+              alert('프로필이 저장 요청이 완료되었습니다.');
+              // 필요한 경우 페이지를 리로드하거나 UI를 업데이트
+              location.reload();
+            })
+            .catch(error => {
+              console.error('프로필 저장 중 오류 발생', error);
+            });
+  });
+
+  // 모달이 열릴 때 프로필 로드
+  document.getElementById('profileModal').addEventListener('show.bs.modal', function (event) {
+    loadUserProfile();
+  });
+
+  // 프로필 등록/수정 모달 로드 시 데이터 처리 (GET)
+  function loadUserProfile() {
+
+    const url = `/api/profiles/upload`;
+    const method = 'GET';
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    console.log('모달 로드시 함수')
+    sendRequestWithToken(url, method, headers, null)
+            .then(response => response.json())
+            .then(data => {
+              if (data) {
+                // 데이터가 있으면 모달에 해당 정보를 채워줍니다
+                document.getElementById('niceExperience').value = data.response.niceExperience || '';
+                document.getElementById('profile_mbti').value = data.response.mbti || '';
+                document.getElementById('region').value = data.response.region || '';
+                document.getElementById('profile_major').value = data.response.major || '';
+                document.getElementById('plan').value = data.response.plan || '';
+
+                // if (data.response.profileImage) {
+                //     document.getElementById('profilePreview').src = `data:image/png;base64,${data.response.profileImage}`;
+                // } else {
+                //     document.getElementById('profilePreview').src = '/img/img.png'; // 이미지가 없을 경우
+                // }
+              } else {
+                // 데이터가 없으면 placeholder 표시
+                document.getElementById('niceExperience').placeholder = '좋았던 경험을 입력하세요';
+                document.getElementById('profile_major').placeholder = '전공을 입력하세요';
+                document.getElementById('plan').placeholder = '계획을 입력하세요';
+              }
+            });
+  }
+
+  // 이미지 파일 선택 시 미리보기 업데이트
+  document.getElementById('profileImage').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('profilePreview');
+
+    if (file && file.type.match('image.*')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      preview.src = 'img.png';  // 기본 이미지로 초기화
+    }
+  });
 </script>
 </body>
 </html>
