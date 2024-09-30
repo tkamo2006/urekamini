@@ -21,6 +21,10 @@ public class ProfilePageProfileRequestDto {
     private String niceExperience;
     private byte[] profileImage;
     private List<Hobby> hobbies;
-    private RequestType requestType;
-    private RequestStatus requestStatus;
+    private String requestType;
+    private String requestStatus;
+
+//    private RequestType requestType;
+//    private RequestStatus requestStatus;
+
 }

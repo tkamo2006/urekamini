@@ -20,4 +20,9 @@ public class CodeKey implements Serializable {
 		this.groupCode = groupCode;
 		this.code = code;
 	}
+
+	public static CodeKey parse(String codeKey){
+		String[] split = codeKey.split("-");
+		return new CodeKey(split[0],split[1]);
+	}
 }

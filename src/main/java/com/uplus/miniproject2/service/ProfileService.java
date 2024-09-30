@@ -3,8 +3,10 @@ package com.uplus.miniproject2.service;
 import com.uplus.miniproject2.dto.ProfileExistDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileRequestDto;
 import com.uplus.miniproject2.dto.ProfilePageProfileResponseDto;
-import com.uplus.miniproject2.entity.hobby.Hobby;
 import com.uplus.miniproject2.dto.ProfileRequestDto;
+import com.uplus.miniproject2.entity.common.CommonCode;
+import com.uplus.miniproject2.entity.common.Key.CodeKey;
+import com.uplus.miniproject2.entity.hobby.Hobby;
 import com.uplus.miniproject2.entity.proflie.*;
 import com.uplus.miniproject2.entity.user.User;
 import com.uplus.miniproject2.repository.*;
@@ -15,7 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
+import static com.uplus.miniproject2.entity.common.CommonCode.*;
 
 @Service
 @Transactional
@@ -27,13 +32,15 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final HobbyRepository hobbyRepository;
     private final RegionRepository regionRepository;
+    private final CodeRepository codeRepository;
 
     public ProfilePageProfileRequestDto createProfileRequest(Long userId,
                                                              ProfilePageProfileResponseDto profileResponseDto) {
         User user = userRepository.findByIdWithProfileAndHobbies(userId)
                 .orElseThrow(() -> new IllegalArgumentException());
 
-        RequestType requestType;
+        CodeKey codeKey;
+//        RequestType requestType;
         Profile profile;
         Region region = regionRepository.findByName(profileResponseDto.getRegion());
 
@@ -42,7 +49,9 @@ public class ProfileService {
 
         // 사용자의 기존 프로필이 있는지 확인
         if (user.getProfile() == null) {
-            requestType = RequestType.REGISTER;
+//            requestType = RequestType.REGISTER;
+            codeKey = REGISTER.getCodeKey();
+
             // 프로필이 없는 경우 새로운 프로필 생성
             profile = Profile.builder()
                     .user(user)
@@ -56,7 +65,8 @@ public class ProfileService {
                     .build();
 
         } else {
-            requestType = RequestType.UPDATE;
+//            requestType = RequestType.UPDATE;
+            codeKey = UPDATE.getCodeKey();
             // 기존 프로필이 있는 경우 업데이트
             profile = user.getProfile();
 
@@ -68,8 +78,8 @@ public class ProfileService {
         ProfileRequest newProfileRequest = ProfileRequest.builder()
                 .user(user)
                 .profile(profile)
-                .requestType(requestType)
-                .requestStatus(RequestStatus.PENDING)
+                .requestTypeCodeKey(codeKey)
+                .requestStatusCodeKey(PENDING.getCodeKey())
                 .build();
 
         Optional<ProfileRequest> profileRequest = profileRequestRepository.findByUserId(userId);
@@ -81,6 +91,15 @@ public class ProfileService {
                     profileRequestRepository.save(newProfileRequest);
                 });
 
+        String requestTypeCodeKey = newProfileRequest.getRequestTypeCodeKey();
+        CodeKey parseRequestTypeCodeKey = CodeKey.parse(requestTypeCodeKey);
+        String requestTypeCodeName = codeRepository.findByCodeKey(parseRequestTypeCodeKey).getCodeName();
+
+        String requestStatusCodeKey = newProfileRequest.getRequestStatusCodeKey();
+        CodeKey parseRequestStatusCodeKey = CodeKey.parse(requestStatusCodeKey);
+        String requestStatusCodeName = codeRepository.findByCodeKey(parseRequestStatusCodeKey).getCodeName();
+
+
         return new ProfilePageProfileRequestDto(
                 profile.getMajor(),
                 profile.getMbti().name(),
@@ -89,8 +108,10 @@ public class ProfileService {
                 profile.getNiceExperience(),
                 profile.getImage(),
                 profile.getHobbies(),
-                newProfileRequest.getRequestType(),
-                newProfileRequest.getRequestStatus()
+                requestTypeCodeName,
+                requestStatusCodeName
+//               newProfileRequest.getRequestType(),
+//               newProfileRequest.getRequestStatus()
         );
     }
 

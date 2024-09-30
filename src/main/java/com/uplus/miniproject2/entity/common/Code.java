@@ -16,6 +16,7 @@ public class Code {
     @EmbeddedId
     CodeKey codeKey;
 
+
     @Column(name = "code_name")
     private String codeName;
 
