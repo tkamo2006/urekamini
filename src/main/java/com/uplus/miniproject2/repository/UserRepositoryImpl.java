@@ -66,9 +66,10 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .join(user.profileRequests, profileRequest)
                 .on(profileRequest.profile.eq(profile))
                 .where(builder
-                        .and(profileRequest.requestStatus.isNotNull())
-                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
-                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED)))
+//                        .and(profileRequest.requestStatus.isNotNull())
+//                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
+//                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED))
+                        )
                 .orderBy(user.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -79,8 +80,9 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .join(user.profile, profile)
                 .join(user.profileRequests, profileRequest)
                 .where(builder
-                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
-                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED)))
+//                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
+//                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED))
+                )
                 .fetch()
                 .size();
 
