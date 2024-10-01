@@ -145,16 +145,7 @@ public class ProfileService {
         ProfileRequest request = profileRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid requestId: " + requestId));
 
-        // requestStatus 문자열을 RequestStatus Enum으로 변환
-        RequestStatus status;
-        try {
-            status = RequestStatus.valueOf(requestStatus);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid requestStatus: " + requestStatus);
-        }
-
-        // 상태 변경
-        request.changeRequestStatus(status);
+        request.UpdateRequestStatusCodeKey(requestStatus);
 
         // 변경 사항 저장 (보통 Service에서 Repository를 사용하여 저장)
         profileRequestRepository.save(request);

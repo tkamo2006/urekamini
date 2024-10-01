@@ -73,5 +73,9 @@ public class ProfileRequest {
     }
 
 
+    public void UpdateRequestStatusCodeKey(String requestStatusCodeKey){
+        this.requestStatusCodeKey = requestStatusCodeKey;
+    }
+
 }
 
