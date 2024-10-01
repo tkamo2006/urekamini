@@ -52,8 +52,8 @@ public class ProfileRequest {
     public void updateProfileRequest(ProfileRequest newProfileRequest) {
         this.user = newProfileRequest.user;
         this.profile = newProfileRequest.profile;
-//        this.requestType = newProfileRequest.requestType;
-//        this.requestStatus = newProfileRequest.requestStatus;
+        this.requestTypeCodeKey = newProfileRequest.getRequestTypeCodeKey();
+        this.requestStatusCodeKey = newProfileRequest.getRequestStatusCodeKey();
     }
 
 
