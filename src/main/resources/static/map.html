@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>유레카 정보 관리</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/map.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+
+<header>
+    <!-- Navbar HTML이 동적으로 로드됨 -->
+</header>
+
+<div class="container" style="margin-left: 400px; padding-top: 20px;">
+    <h1 class="text-center">동료들이 사는 지역</h1>
+    <p class="text-center">다음은 사용자들의 위치를 표시한 지도입니다.</p>
+
+    <!-- 지도과 사용자 목록을 감싸는 컨테이너 -->
+    <div class="map-and-list-container">
+        <div class="map-container" id="map"></div>
+        <div class="user-list" id="user-list">
+            <div class="text-center mb-3">
+                <button id="calculateDistanceBtn" class="btn btn-outline-primary" style="border-radius: 20px; font-size: 1.1rem; padding: 10px 20px; transition: background-color 0.3s;">
+                    거리 계산하기
+                </button>
+            </div>
+
+            <!-- 사용자 목록이 동적으로 삽입됩니다 -->
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff007f;">
+                <h5 class="modal-title text-white" id="userModalLabel">유저 상세 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img id="modalProfileImage" src="" class="img-fluid rounded" alt="프로필 이미지" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="col-md-8">
+                        <h5 id="modalUserName"></h5>
+                        <p><strong>성별:</strong> <span id="modalUserGender"></span></p>
+                        <p><strong>MBTI:</strong> <span id="modalUserMbti"></span></p>
+                        <p><strong>사는 지역:</strong> <span id="modalUserRegion"></span></p>
+                        <p><strong>전공:</strong> <span id="modalUserMajor"></span></p>
+                        <p><strong>취미:</strong>
+                            <span id="modalUserHobbies" class="d-inline"></span>
+                        </p>
+                        <p><strong>가장 좋았던 경험:</strong> <span id="modalUserExperience"></span></p>
+                        <p><strong>앞으로의 계획:</strong> <span id="modalUserPlan"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="familiarityBtn" class="btn btn-primary">나와의 친밀도</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 프로필 등록/수정 모달 -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #ff007f;">
+                <h5 class="modal-title text-white" id="profileModalLabel">프로필 등록/수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="profile-modal-body">
+                <form id="profileForm">
+                    <div class="row">
+                        <!-- 프로필 이미지 -->
+                        <div class="col-md-4 mb-3">
+                            <label for="profileImage" class="form-label">프로필 이미지</label>
+                            <input type="file" class="form-control" id="profileImage" accept="image/png, image/jpeg, image/jpg, image/gif">
+                            <div class="text-center">
+                                <img id="profilePreview" src="/img/img.png" class="img-fluid rounded mt-2" alt="프로필 이미지 미리보기" style="width: 300px; height: 300px; object-fit: cover;">
+                            </div>
+                        </div>
+
+                        <!-- 프로필 정보 입력란 -->
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="mbti" class="form-label">MBTI</label>
+                                <select class="form-select" id="profile_mbti" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="ISTJ">ISTJ</option>
+                                    <option value="ESTJ">ESTJ</option>
+                                    <option value="INTJ">INTJ</option>
+                                    <option value="ENTJ">ENTJ</option>
+                                    <option value="ISFJ">ISFJ</option>
+                                    <option value="ESFJ">ESFJ</option>
+                                    <option value="INFJ">INFJ</option>
+                                    <option value="ENFJ">ENFJ</option>
+                                    <option value="ISTP">ISTP</option>
+                                    <option value="ESTP">ESTP</option>
+                                    <option value="INTP">INTP</option>
+                                    <option value="ENTP">ENTP</option>
+                                    <option value="ISFP">ISFP</option>
+                                    <option value="ESFP">ESFP</option>
+                                    <option value="INFP">INFP</option>
+                                    <option value="ENFP">ENFP</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="region" class="form-label">사는 지역</label>
+                                <select class="form-select" id="region" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="파주">파주</option>
+                                    <option value="인천">인천</option>
+                                    <option value="익산">익산</option>
+                                    <option value="서울">서울</option>
+                                    <option value="대전">대전</option>
+                                    <option value="대구">대구</option>
+                                    <option value="고양">고양</option>
+                                    <option value="광주">광주</option>
+                                    <option value="시흥">시흥</option>
+                                    <option value="군포">군포</option>
+                                    <option value="평택">평택</option>
+                                    <option value="성남">성남</option>
+                                    <option value="천안">천안</option>
+                                    <option value="거제">거제</option>
+                                    <option value="부산">부산</option>
+                                    <option value="의왕">의왕</option>
+                                    <option value="창원">창원</option>
+                                    <option value="청주">청주</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="major" class="form-label">전공</label>
+                                <input type="text" class="form-control" id="profile_major" placeholder="전공을 입력하세요" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="niceExperience" class="form-label">좋았던 경험</label>
+                                <textarea class="form-control" id="niceExperience" placeholder="좋았던 경험을 입력하세요" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="plan" class="form-label">앞으로의 계획</label>
+                                <textarea class="form-control" id="plan" placeholder="계획을 입력하세요" rows="3" required></textarea>
+                            </div>
+
+                            <!-- 취미 선택 (버튼으로 변경) -->
+                            <div class="mb-3">
+                                <label class="form-label">취미 <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-wrap" id="hobbyButtons">
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="CULTURAL_LIFE">문화생활</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="EXERCISE">운동</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="FOOD">음식</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="GAME">게임</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="MUSIC">음악</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="TRAVEL">여행</button>
+                                    <button type="button" class="btn btn-outline-primary me-2 hobby-btn" data-value="ETC">기타</button>
+                                </div>
+                            </div>
+
+
+                            <!-- 세부 취미 선택 -->
+                            <div class="mb-3" id="subHobbiesContainer" style="display: none;">
+                                <label class="form-label">세부 취미</label>
+                                <div class="d-flex flex-wrap" id="subHobbies"></div>
+                                <div class="invalid-feedback" id="subHobbyError" style="display: none;">하나 이상의 세부 취미를 선택하세요.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-muted ms-2">* 관리자 승인 후 프로필이 등록됩니다.</span>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 거리계산 모달 창  -->
+<div class="modal fade" id="distanceModal" tabindex="-1" aria-labelledby="distanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="distanceModalLabel">거리 계산</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>사용자 선택 (최대 2명 선택 가능):</h6>
+                <div id="userSelectionContainer" style="max-height: 300px; overflow-y: auto;">
+                    <!-- 사용자 목록이 카드 형태로 삽입됩니다 -->
+                </div>
+                <div id="distanceResult" style="margin-top: 20px;">
+                    <!-- 거리 계산 결과가 여기에 표시됩니다 -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="calculateDistance">거리 계산하기</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b725e40e2b697b42e1aac0b02c8a06ee&libraries=clusterer"></script>
+<script>
+    var mapContainer = document.getElementById('map'),
+        mapOption = {
+            center: new kakao.maps.LatLng(36.84, 127.77),
+            level: 13
+        };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+    var markers = {};
+    var infowindows = {};
+    var userListContainer = document.getElementById('user-list');
+    const token = localStorage.getItem("accessToken");
+    // 프로필 데이터 가져오기
+    fetch('/api/map/profiles', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("데이터를 가져왔습니다.", data);
+            populateMapAndUserList(data.response);
+        })
+        .catch(error => {
+            console.error('지도를 업데이트하는 중 오류 발생:', error);
+        });
+
+    function populateMapAndUserList(profiles) {
+        profiles.forEach(profile => {
+            if (profile.regionName && profile.latitude && profile.longitude && profile.userId && profile.userName) {
+                var position = new kakao.maps.LatLng(profile.latitude, profile.longitude);
+
+                // 마커 생성
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: position,
+                    title: profile.userName
+                });
+
+                // 인포윈도우 생성
+                var infowindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding: 3px 5px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); font-size: 12px; color: #333; width: 150px; height: auto; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: 'Arial', sans-serif;">
+                                <a href="#" onclick="openUserModal(${profile.userId}); return false;" style="text-decoration: none; color: #333;">
+                                    <strong style="font-size: 14px; font-weight: bold;">${profile.userName}</strong>
+                                </a>
+                                <span style="margin-top: 2px; font-size: 12px; color: #666;">${profile.regionName || '주소 정보 없음'}</span>
+                            </div>`
+                });
+
+                markers[profile.userId] = marker;
+                infowindows[profile.userId] = infowindow;
+
+                // 마커 클릭 이벤트
+                kakao.maps.event.addListener(marker, 'click', function() {
+                    infowindow.getMap() ? infowindow.close() : infowindow.open(map, marker);
+                });
+
+                // 사용자 리스트에 추가
+                var userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `<a href="#" data-user-id="${profile.userId}" style="text-decoration: none; color: #333;">${profile.userName}</a>`;
+                userListContainer.appendChild(userItem);
+            } else {
+                console.error('Profile 데이터가 부족합니다:', profile);
+            }
+        });
+
+        // 사용자 리스트 클릭 이벤트
+        userListContainer.addEventListener('click', function(event) {
+            if (event.target.tagName === 'A') {
+                var userId = event.target.getAttribute('data-user-id');
+                var marker = markers[userId];
+                var infowindow = infowindows[userId];
+
+                if (marker && infowindow) {
+                    infowindow.getMap() ? infowindow.close() : infowindow.open(map, marker);
+                    map.panTo(marker.getPosition());
+                }
+            }
+        });
+
+        populateUserSelection(profiles);
+    }
+
+    // 사용자 선택 목록 생성
+    function populateUserSelection(users) {
+        const userSelectionContainer = document.getElementById('userSelectionContainer');
+        userSelectionContainer.innerHTML = '';
+
+        users.forEach(user => {
+            const userItem = document.createElement('div');
+            userItem.className = 'form-check';
+            userItem.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${user.userId}" id="userCheck${user.userId}" onclick="handleUserCheck(${user.userId})">
+                <label class="form-check-label" for="userCheck${user.userId}">${user.userName}</label>
+            `;
+            userSelectionContainer.appendChild(userItem);
+        });
+    }
+
+    // 사용자 모달 열기
+    function openUserModal(userId) {
+        fetch(`/api/users/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                const user = data.response;
+                document.getElementById('modalProfileImage').src = `data:image/png;base64,${user.profileImage}`;
+                document.getElementById('modalUserName').innerText = user.name;
+                document.getElementById('modalUserGender').innerText = user.gender === 'male' ? '남성' : '여성';
+                document.getElementById('modalUserMbti').innerText = user.mbti;
+                document.getElementById('modalUserRegion').innerText = user.region;
+                document.getElementById('modalUserMajor').innerText = user.major;
+
+                const hobbiesList = document.getElementById('modalUserHobbies');
+                hobbiesList.innerHTML = user.hobbies.map(hobby =>
+                    `<span class="badge bg-pink text-white me-2" style="font-size: 1.025rem; padding: 10px 15px;">${hobby.name}</span>`
+                ).join('');
+
+                document.getElementById('modalUserExperience').innerText = user.niceExperience;
+                document.getElementById('modalUserPlan').innerText = user.plan;
+
+                const familiarityBtn = document.getElementById('familiarityBtn');
+                familiarityBtn.href = `/familiarity.html?userId=${userId}`;
+
+                const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+                userModal.show();
+            });
+    }
+
+    document.getElementById('calculateDistanceBtn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('distanceModal')).show();
+    });
+
+    // 'calculateDistance' 버튼에 클릭 이벤트 리스너 추가
+    document.getElementById('calculateDistance').addEventListener('click', function() {
+        // 체크된 사용자 체크박스에서 값을 가져와 배열로 변환
+        const selectedUsers = Array.from(document.querySelectorAll('#userSelectionContainer .form-check-input:checked'))
+            .map(checkbox => checkbox.value);
+
+
+        // 선택된 사용자 ID 콘솔에 출력
+        console.log('선택된 사용자 ID:', selectedUsers);
+
+        // 선택된 사용자의 수가 2가 아닌 경우 경고 메시지 출력
+        if (selectedUsers.length !== 2) {
+            alert('정확히 두 명의 사용자를 선택해야 합니다.');
+            return; // 함수 종료
+        }
+
+        const [userId1, userId2] = selectedUsers;
+
+        // 로컬 저장소에서 액세스 토큰 가져오기
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            console.error("토큰이 없습니다."); // 토큰이 없을 경우 콘솔에 오류 출력
+            return; // 토큰이 없으면 함수 종료
+        }
+
+        // 사용자 1과 사용자 2의 좌표를 각각 가져와서 거리 계산
+        Promise.all([
+            fetchCoordinates(userId1, token),
+            fetchCoordinates(userId2, token)
+        ])
+            .then(([coordinates1, coordinates2]) => {
+                const [lat1, lon1] = coordinates1.response; // 여기서 data 필드 사용
+                const [lat2, lon2] = coordinates2.response; // 여기서 data 필드 사용
+                console.log('지역 1의 좌표:', coordinates1.data);
+                console.log('지역 2의 좌표:', coordinates2.data);
+
+                // 두 지점 사이의 거리 계산 (단위: km)
+                const distance = calculateDistance(lat1, lon1, lat2, lon2);
+
+                // 거리 출력 시 소수점 3자리까지 포맷팅
+                const formattedDistance = distance.toFixed(3) + ' KM';
+                const duration = estimateDuration(distance); // 예상 소요 시간 계산
+
+                document.getElementById('distanceResult').innerHTML = `
+                <strong>결과</strong><br>
+                <span>거리: <span style="color: #007bff;">${formattedDistance}</span></span><br>
+                <span>소요 시간: <span style="color: #007bff;">${duration}</span></span>
+                    `;
+
+            })
+            .catch(error => {
+                console.error('거리를 계산하는 도중 오류 발생:', error);
+                alert('거리를 계산하는 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            });
+    });
+
+    function fetchCoordinates(userId, token) {
+        console.log('좌표 요청 중: 사용자 ID =', userId);
+        return fetch(`/api/map/coordinates/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                console.log('응답 상태:', response.status); // 응답 상태 코드 로그
+                return response.text() // 응답을 JSON으로 변환하기 전에 텍스트로 확인
+                    .then(text => {
+                        console.log('받은 응답:', text); // 응답 텍스트 로그
+                        return JSON.parse(text); // 텍스트를 JSON으로 파싱
+                    });
+            });
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // 지구 반지름 (단위: km)
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    function toRadians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    // 예상 소요 시간 계산 함수 예시 (속도: 60 km/h)
+    function estimateDuration(distance) {
+        const speed = 24; // km/h
+        const timeInHours = distance / speed;
+        const minutes = Math.round(timeInHours * 60);
+        return `${minutes} 분`;
+    }
+    // 사용자 선택 체크박스 상태 관리
+    function handleUserCheck(userId) {
+        const checkboxes = document.querySelectorAll('#userSelectionContainer .form-check-input');
+        console.log("체크박스 확인",checkboxes)
+        const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+
+        if (checkedCount > 2) {
+            alert('최대 2명만 선택할 수 있습니다.');
+            document.getElementById(`userCheck${userId}`).checked = false; // 현재 체크박스 해제
+        }
+    }
+
+    // 세부 취미 리스트
+    const hobbyDetails = {
+        'CULTURAL_LIFE': ['축구 관람', '야구 관람', '뮤지컬', '연극', '영화', '독서', '애니메이션 시청', '금속 공예'],
+        'EXERCISE': ['헬스', '검도', '다이어트', '축구', '농구', '배드민턴', '스케이트 보드', '산책', '달리기', '줄넘기', '운동', '수영'],
+        'FOOD': ['커피', '요리', '맛집 찾기', '음주', '빵집 찾기'],
+        'GAME': ['게임'],
+        'MUSIC': ['음악 감상', '노래'],
+        'TRAVEL': ['여행'],
+        'ETC': ['강아지', '고양이', '깃허브 구경', '드라이브', '필름 사진', '귀여운거 보기', '글 쓰기', '밸런스 게임 만들기', '알고리즘 문제 풀기', '트레이딩', '잡담하기']
+    };
+
+    const subHobbiesContainer = document.getElementById('subHobbiesContainer');
+    const subHobbiesDiv = document.getElementById('subHobbies');
+
+    // 세부 취미를 기억하기 위한 배열
+    let selectedSubHobbies = [];
+
+    // 버튼 클릭 이벤트 리스너
+    const hobbyButtons = document.querySelectorAll('.hobby-btn');
+    hobbyButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const hobby = this.getAttribute('data-value'); // data-value 속성으로 변경
+
+            // 세부 취미 목록 초기화
+            subHobbiesDiv.innerHTML = '';
+            subHobbiesContainer.style.display = 'block';
+
+            // 선택한 취미에 해당하는 세부 취미 표시
+            const hobbies = hobbyDetails[hobby];
+
+            // hobbies가 정의되어 있는지 확인
+            if (hobbies) {
+                hobbies.forEach(subHobby => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-check', 'me-3');
+
+                    // 체크박스 상태 설정
+                    const isChecked = selectedSubHobbies.includes(subHobby);
+                    div.innerHTML = `
+                    <input class="form-check-input sub-hobby-checkbox" type="checkbox" value="${subHobby}" id="${subHobby}" ${isChecked ? 'checked' : ''}>
+                    <label class="form-check-label" for="${subHobby}">${subHobby}</label>
+                `;
+                    subHobbiesDiv.appendChild(div);
+                });
+            } else {
+                console.error(`No hobbies found for: ${hobby}`);
+            }
+
+            // 체크박스 이벤트 리스너
+            const subHobbyCheckboxes = document.querySelectorAll('.sub-hobby-checkbox');
+            subHobbyCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        selectedSubHobbies.push(this.value);
+                    } else {
+                        selectedSubHobbies = selectedSubHobbies.filter(hobby => hobby !== this.value);
+                    }
+                });
+            });
+        });
+    });
+
+    // 프로필 저장 로직 (POST)
+    document.getElementById('profileForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const subHobbyError = document.getElementById('subHobbyError'); // 세부 취미 에러 메시지 요소
+
+        if (selectedSubHobbies.length === 0) {
+            e.preventDefault();
+            subHobbyError.style.display = 'block'; // 세부 취미 에러 메시지 표시
+            return; // 함수 종료
+        } else {
+            subHobbyError.style.display = 'none'; // 세부 취미 에러 메시지 숨기기
+        }
+
+        const formData = new FormData();
+        formData.append('niceExperience', document.getElementById('niceExperience').value);
+        formData.append('mbti', document.getElementById('profile_mbti').value);
+        formData.append('region', document.getElementById('region').value);
+        formData.append('major', document.getElementById('profile_major').value);
+        formData.append('plan', document.getElementById('plan').value);
+
+        // 프로필 이미지 처리
+        const imageFile = document.getElementById('profileImage').files[0];
+        if (imageFile) {
+            formData.append('profileImage', imageFile);
+        }
+
+        // 선택된 취미 처리
+        const selectedHobbies = Array.from(document.querySelectorAll('.hobby-checkbox:checked'))
+            .map(checkbox => checkbox.value);
+        formData.append('hobbies', JSON.stringify(selectedHobbies));
+        formData.append('subHobbies', selectedSubHobbies);
+
+        const url = `/api/profiles`;
+        const method = 'POST';
+
+        sendRequestWithToken(url, method, null, formData)
+            .then(response => response.json())
+            .then(data => {
+                alert('프로필이 저장 요청이 완료되었습니다.');
+                // 필요한 경우 페이지를 리로드하거나 UI를 업데이트
+                location.reload();
+            })
+            .catch(error => {
+                console.error('프로필 저장 중 오류 발생', error);
+            });
+    });
+
+    // 모달이 열릴 때 프로필 로드
+    document.getElementById('profileModal').addEventListener('show.bs.modal', function (event) {
+        loadUserProfile();
+    });
+
+    // 프로필 등록/수정 모달 로드 시 데이터 처리 (GET)
+    function loadUserProfile() {
+
+        const url = `/api/profiles/upload`;
+        const method = 'GET';
+        const headers = new Headers({
+            'Content-Type': 'application/json'
+        });
+        sendRequestWithToken(url, method, headers, null)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    // 데이터가 있으면 모달에 해당 정보를 채워줍니다
+                    document.getElementById('niceExperience').value = data.response.niceExperience || '';
+                    document.getElementById('profile_mbti').value = data.response.mbti || '';
+                    document.getElementById('region').value = data.response.region || '';
+                    document.getElementById('profile_major').value = data.response.major || '';
+                    document.getElementById('plan').value = data.response.plan || '';
+
+                } else {
+                    // 데이터가 없으면 placeholder 표시
+                    document.getElementById('niceExperience').placeholder = '좋았던 경험을 입력하세요';
+                    document.getElementById('profile_major').placeholder = '전공을 입력하세요';
+                    document.getElementById('plan').placeholder = '계획을 입력하세요';
+                }
+            });
+    }
+
+    // 이미지 파일 선택 시 미리보기 업데이트
+    document.getElementById('profileImage').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('profilePreview');
+
+        if (file && file.type.match('image.*')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = 'img.png';  // 기본 이미지로 초기화
+        }
+    });
+
+    // 페이지가 로드될 때 문화생활 버튼 자동 클릭
+    document.addEventListener("DOMContentLoaded", function () {
+        const culturalLifeButton = document.querySelector('button[data-value="CULTURAL_LIFE"]');
+        if (culturalLifeButton) {
+            culturalLifeButton.click(); // 문화생활 버튼 클릭
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="/js/auth.js"></script>
+<script src="/js/navbar.js"></script></body>
+</html>

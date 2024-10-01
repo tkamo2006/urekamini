@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유레카 회원가입 페이지</title>
+    <style>
+        /* 기본 스타일 리셋 */
+        body, h1, label, input, button, select {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 기본 본문 스타일 설정 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* 회원가입 컨테이너 스타일 */
+        .signup-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 회원가입 폼 스타일 */
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 폼 제목 스타일 */
+        .signup-form h1 {
+            margin-bottom: 1rem;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* 폼 레이블 및 입력 필드 스타일 */
+        .signup-form label {
+            margin-bottom: 0.5rem;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .signup-form input,
+        .signup-form select {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* 제출 버튼 스타일 */
+        .signup-form button {
+            padding: 0.75rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF007F;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .signup-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 로그인 링크 스타일 */
+        .login-link {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 사용자명 확인 메시지 */
+        .username-check-message {
+            color: red;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <form class="signup-form" id="signupForm">
+        <h1>회원가입</h1>
+
+        <label for="name">이름:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="username">사용자명:</label>
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="username" name="username" required>
+            <button type="button" id="btnCheckUsername" style="margin-left: 1rem; margin-bottom: 1rem ">중복 확인</button>
+        </div>
+        <div id="username-check-message" class="username-check-message"></div>
+
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="password2">비밀번호 확인:</label>
+        <input type="password" id="password2" name="password2" required>
+        <div id="error-message" style="color: red;"></div>
+
+        <label for="gender">성별:</label>
+        <select id="gender" name="gender" required>
+            <option value="male" selected>남성</option>
+            <option value="female">여성</option>
+        </select>
+
+        <button type="button" id="btnSignUp">회원가입</button>
+        <div class="login-link">
+            <p>이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
+        </div>
+    </form>
+</div>
+
+<script>
+    let isUsernameAvailable = false; // 사용자명 사용 가능 여부
+    let isPasswordAvailable = false; // 비밀번호 일치 여부
+
+    window.onload = function() {
+        document.querySelector("#btnCheckUsername").onclick = checkUsername;
+        document.querySelector("#username").addEventListener("input", resetUsernameCheck); // 사용자명 변경 시 확인 초기화
+        document.querySelector("#password2").addEventListener("input", checkPasswordMatch);
+        document.querySelector("#btnSignUp").onclick = validateAndSignUp;
+    };
+
+    // 비밀번호 일치 여부를 확인하는 함수
+    function checkPasswordMatch() {
+        let password = document.querySelector("#password").value;
+        let password2 = document.querySelector("#password2").value;
+        let errorMessage = document.querySelector("#error-message");
+
+        if (password !== password2) {
+            errorMessage.textContent = "비밀번호가 일치하지 않습니다."; // 오류 메시지 표시
+            isPasswordAvailable = false;
+        } else {
+            errorMessage.textContent = ""; // 오류 메시지 초기화
+            isPasswordAvailable = true;
+        }
+    }
+
+    // 사용자명 중복 확인 함수
+    async function checkUsername() {
+        let username = document.querySelector("#username").value;
+        let messageElement = document.querySelector("#username-check-message");
+
+        if (username.trim() === "") {
+            messageElement.textContent = "사용자명을 입력하세요.";
+            messageElement.style.color = "red"; // 빨간색
+            return;
+        }
+
+        try {
+            let response = await fetch(`/api/join/usernames/${username}`);
+
+            if (!response.ok) {
+                throw new Error('네트워크 오류');
+            }
+
+            let result = await response.json();
+
+            if (result.response === true) {
+                messageElement.textContent = "이미 존재하는 사용자명입니다.";
+                messageElement.style.color = "red"; // 빨간색
+                isUsernameAvailable = false;
+            } else {
+                messageElement.textContent = "사용 가능한 사용자명입니다.";
+                messageElement.style.color = "green"; // 초록색
+                isUsernameAvailable = true;
+            }
+        } catch (error) {
+            console.error('사용자명 확인 중 오류 발생:', error);
+            messageElement.textContent = "사용자명 확인 중 오류가 발생했습니다.";
+            messageElement.style.color = "red"; // 빨간색
+        }
+    }
+
+
+    // 회원가입 전 비밀번호 확인 및 회원가입 처리 함수
+    async function validateAndSignUp() {
+        let name = document.querySelector("#name").value;
+        let username = document.querySelector("#username").value;
+        let password = document.querySelector("#password").value;
+        let password2 = document.querySelector("#password2").value;
+        let gender = document.querySelector("#gender").value;
+        let errorMessage = document.querySelector("#error-message");
+
+        // 입력 필드 확인
+        if (!name || !username || !password || !password2 || !gender) {
+            alert("입력하지 않은 항목이 있습니다.");
+            return;
+        }
+
+        // 사용자명 중복 확인 여부
+        if (!isUsernameAvailable) {
+            alert("사용자명을 확인하세요.");
+            return;
+        }
+
+        // 비밀번호 일치 여부 확인
+        if (!isPasswordAvailable) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        await signUp();
+    }
+
+    // 사용자명 입력 시 확인 초기화
+    function resetUsernameCheck() {
+        isUsernameAvailable = false; // 사용 가능 여부 초기화
+        document.querySelector("#username-check-message").textContent = ""; // 메시지 초기화
+    }
+
+    // 회원가입 처리 함수
+    async function signUp() {
+        let name = document.querySelector("#name").value;
+        let username = document.querySelector("#username").value;
+        let password = document.querySelector("#password").value;
+        let gender = document.querySelector("#gender").value;
+
+        let data = {
+            name: name,
+            username: username,
+            password: password,
+            gender: gender
+        };
+
+        let url = "/api/join";
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        };
+
+        try {
+            let response = await fetch(url, fetchOptions);
+
+            if (!response.ok) {
+                throw new Error('네트워크 응답이 올바르지 않습니다.');
+            }
+
+            alert("회원가입에 성공하였습니다.");
+            window.location.href = "login.html";
+
+        } catch (error) {
+            console.error('회원가입 중 오류 발생:', error);
+            alert("회원가입 과정에서 오류가 발생했습니다.");
+        }
+    }
+
+</script>
+</body>
+</html>
