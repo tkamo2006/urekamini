@@ -1,5 +1,4 @@
-package com.mycom.myapp.entity;
-
+package com.uplus.miniproject2.entity.common;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,15 +1,12 @@
 package com.uplus.miniproject2.repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.uplus.miniproject2.dto.MainPageUserDto;
 import com.uplus.miniproject2.entity.proflie.MBTI;
 import com.uplus.miniproject2.entity.proflie.QProfile;
 import com.uplus.miniproject2.entity.proflie.QProfileRequest;
-import com.uplus.miniproject2.entity.proflie.RequestStatus;
 import com.uplus.miniproject2.entity.user.QUser;
 import com.uplus.miniproject2.entity.user.User;
 import jakarta.persistence.EntityManager;
@@ -66,10 +63,9 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .join(user.profileRequests, profileRequest)
                 .on(profileRequest.profile.eq(profile))
                 .where(builder
-//                        .and(profileRequest.requestStatus.isNotNull())
-//                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
-//                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED))
-                        )
+                        .and(profileRequest.requestStatusCodeKey.isNotNull())
+                        .and(profileRequest.requestStatusCodeKey.ne("A02-020"))
+                        .and(profileRequest.requestStatusCodeKey.ne("A02-030")))
                 .orderBy(user.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -80,11 +76,10 @@ public class UserRepositoryImpl implements CustomUserRepository {
                 .join(user.profile, profile)
                 .join(user.profileRequests, profileRequest)
                 .where(builder
-//                        .and(profileRequest.requestStatus.ne(RequestStatus.PENDING))
-//                        .and(profileRequest.requestStatus.ne(RequestStatus.REJECTED))
-                )
-                .fetch()
-                .size();
+                        .and(profileRequest.requestStatusCodeKey.isNotNull())
+                        .and(profileRequest.requestStatusCodeKey.ne("A02-020"))
+                        .and(profileRequest.requestStatusCodeKey.ne("A02-030")))
+                .fetchCount();  // fetchCount() 사용하여 전체 레코드 수 계산
 
         return new PageImpl<>(result, pageable, total);
     }

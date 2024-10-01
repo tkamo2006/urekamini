@@ -83,7 +83,7 @@ public class ProfileController {
 
     @PutMapping("/{requestId}")
     public ApiUtil.ApiSuccess<?> updateProfileRequest(@PathVariable Long requestId, @RequestBody ProfileRequestDto requestDto) {
-        profileService.updateProfileRequest(requestId, requestDto.getRequestStatus());
+        profileService.updateProfileRequest(requestId, requestDto.getRequestStatusCodeKey());
         return ApiUtil.success("Profile request status updated successfully");
     }
 

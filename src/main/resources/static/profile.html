@@ -162,8 +162,8 @@
             const board = document.createElement('div');
             board.className = 'board';
 
-            const pendingRequests = data.response.content.filter(item => item.requestStatus === 'PENDING');
-            const otherRequests = data.response.content.filter(item => item.requestStatus !== 'PENDING');
+            const pendingRequests = data.response.content.filter(item => item.requestStatus === 'A02-020');
+            const otherRequests = data.response.content.filter(item => item.requestStatus !== 'A02-020');
 
             pendingRequests.forEach(item => {
                 const requestCard = createRequestCard(item, true);
@@ -185,20 +185,21 @@
 
     function createRequestCard(item, isPending) {
 
+        console.log(item)
         const requestCard = document.createElement('div');
         requestCard.className = 'request-card';
         requestCard.innerHTML = `
         <span>사용자: ${item.userName}</span>
-        <span>요청 타입: ${toTranslateRequestType(item.requestType)}</span>
-        <span>상태: ${toTranslateRequestStatus(item.requestStatus)}</span>
+        <span>요청 타입: ${toTranslateRequestType(item.requestTypeCodeKey)}</span>
+        <span>상태: ${toTranslateRequestStatus(item.requestStatusCodeKey)}</span>
         <button class="btn btn-light btn-custom  view-details" onclick="openUserModal(${item.userId})">프로필</button>
         <div>
             ${isPending ? `
-                <button class="btn btn-custom btn-approved" onclick="updateRequest(${item.profileRequestId}, 'APPROVED')">승인</button>
-                <button class="btn btn-custom btn-rejected" onclick="updateRequest(${item.profileRequestId}, 'REJECTED')">거부</button>
+                <button class="btn btn-custom btn-approved" onclick="updateRequest(${item.requestTypeCodeKey}, 'A02-010')">승인</button>
+                <button class="btn btn-custom btn-rejected" onclick="updateRequest(${item.requestTypeCodeKey}, 'A02-030')">거부</button>
             ` : `
-                <button class="btn btn-custom ${item.requestStatus === 'REJECTED' ? 'btn-danger' : 'btn-success'}" disabled>
-                    ${item.requestStatus === 'REJECTED' ? '거부' : item.requestStatus === 'APPROVED' ? '완료' : '처리 완료'}
+                <button class="btn btn-custom ${item.requestTypeCodeKey === 'A02-030' ? 'btn-danger' : 'btn-success'}" disabled>
+                    ${item.requestTypeCodeKey === 'A02-030' ? '거부' : item.requestTypeCodeKey === 'A02-010' ? '완료' : '처리 완료'}
                 </button>
             `}
         </div>`;
@@ -279,19 +280,19 @@
     });
 
     function toTranslateRequestType(type){
-        if (type === 'REGISTER'){
+        if (type === 'A01-010'){
             return '등록'
-        }else if (type === 'UPDATE'){
+        }else if (type === 'A01-020'){
             return '수정'
         }
     }
 
     function toTranslateRequestStatus(status){
-        if (status === "PENDING"){
+        if (status === "A02-020"){
             return '승인 대기중'
-        }else if (status === 'APPROVED'){
+        }else if (status === 'A02-010'){
             return '승인'
-        }else if(status === 'REJECTED'){
+        }else if(status === 'A02-030'){
             return '거부'
         }
     }

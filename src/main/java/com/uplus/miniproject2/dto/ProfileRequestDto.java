@@ -19,8 +19,8 @@ public class ProfileRequestDto {
 
     private Long profileId;
 
-    private String requestType;
+    private String requestTypeCodeKey;
 
-    private String requestStatus;
+    private String requestStatusCodeKey;
 
 }

@@ -15,18 +15,18 @@ import java.util.Optional;
 
 public interface ProfileRequestRepository extends JpaRepository<ProfileRequest, Long> {
 
-    List<ProfileRequest> findAllByRequestStatus(RequestStatus requestStatus);
+    List<ProfileRequest> findAllByrequestStatusCodeKey(String requestStatusCodeKey);
 
     Optional<ProfileRequest> findByUserId(Long userId);
 
-//    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.username, p.id, " +
-//            "CAST(pr.requestType AS string), CAST(pr.requestStatus AS string)) " +
-//            "FROM ProfileRequest pr " +
-//            "JOIN pr.user u " +
-//            "JOIN pr.profile p " +
-//            "ORDER BY CASE WHEN pr.requestStatus = 'PENDING' THEN 0 ELSE 1 END, pr.id DESC"
-//    )
-//
-//    Page<ProfileRequestDto> findAllDto(Pageable pageable);
+    @Query("SELECT new com.uplus.miniproject2.dto.ProfileRequestDto(pr.id, u.id, u.username, p.id, " +
+            "pr.requestTypeCodeKey, pr.requestStatusCodeKey) " +
+            "FROM ProfileRequest pr " +
+            "JOIN pr.user u " +
+            "JOIN pr.profile p " +
+            "ORDER BY CASE WHEN pr.requestStatusCodeKey = 'A02-020' THEN 0 ELSE 1 END, pr.id DESC"
+    )
+    Page<ProfileRequestDto> findAllDto(Pageable pageable);
+
 
 }
